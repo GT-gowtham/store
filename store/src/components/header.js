@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   InputAdornment,
@@ -14,6 +14,7 @@ import {
   Badge,
 } from "@mui/material";
 import Logo from "../assets/hrmslogo.png";
+import Cookies from "js-cookie";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
@@ -21,17 +22,17 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import MenuIcon from "@mui/icons-material/Menu";
 import { MainDiv, MainGrid } from "../styled/headerStyle";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Header = ({
   cartItemCount,
   likedProducts,
   cartItems,
-  loggedIn,
-  userName,
+
 }) => {
   const isMobile = useMediaQuery("(max-width:600px)");
   const isTablet = useMediaQuery("(max-width:960px)"); // Tablet view
-
+  const [username, setUsername] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [fmcg, setFmcg] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -45,6 +46,9 @@ const Header = ({
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
   const toggleDrawer = (open) => () => setDrawerOpen(open);
 
   const isAnyProductLiked = likedProducts.length > 0;
@@ -57,11 +61,64 @@ const Header = ({
     setProfileMenuAnchorEl(null);
   };
 
+  useEffect(() => {
+    const sessionId = Cookies.get('sessionid');
+    const csrfToken = Cookies.get("csrftoken");
+  
+    if (sessionId) {
+      axios.post(
+        "http://localhost:8000/api/check-session/",
+        { session_id: sessionId },
+        {
+          headers: {
+            "X-CSRFToken": csrfToken,
+          },
+          withCredentials: true,
+        }
+      )
+        .then(response => {
+          if (response.data.username) {
+            setUsername(response.data.name);
+          }
+        })
+        .catch(error => {
+          console.error("Session verification error:", error);
+          setUsername(null);
+        });
+    }
+  }, []);
+
   const handleLogout = () => {
-    // Clear session or user data
-    localStorage.removeItem("user"); // Assuming user data is stored in localStorage
-    navigate("/login");
-    handleProfileMenuClose();
+    axios
+      .post("http://localhost:8000/api/logout/", {}, { withCredentials: true })
+      .then(() => {
+        Cookies.remove("sessionKey"); // Clear session from cookies
+        localStorage.removeItem("sessionKey"); // Optional: Clear from localStorage if stored there
+        window.location.reload();  // Redirect to login page
+      })
+      .catch((error) => {
+        console.error("Error logging out:", error);
+      });
+  };
+
+  const handleSearchChange = async (event) => {
+    const query = event.target.value;
+    setSearchTerm(query);
+
+    if (query) {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/search/?query=${query}`);
+        setSearchResults(response.data);
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+      }
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  const handleProductClick = (product) => {
+    navigate("/viewProduct", { state: { product } });
   };
 
   const menuItems = [
@@ -103,8 +160,11 @@ const Header = ({
         )}
         <Grid item lg={6} xs={8} display={isTablet ? "flex" : "block"}>
           <TextField
+            value={searchTerm}
+            onChange={handleSearchChange}
             hiddenLabel
-            defaultValue="Search"
+            defaultValue=""
+            placeholder="Search for products, brands and more"
             variant="standard"
             InputProps={{
               style: {
@@ -123,6 +183,19 @@ const Header = ({
               ),
             }}
           />
+           {searchResults.length > 0 && (
+        <List>
+          {searchResults.map((product) => (
+            <ListItem
+              button
+              key={product.id}
+              onClick={() => handleProductClick(product)}
+            >
+              {product.name} - {product.description}
+            </ListItem>
+          ))}
+        </List>
+      )}
         </Grid>
 
         {/* Profile Icon and Dropdown */}
@@ -147,9 +220,9 @@ const Header = ({
               horizontal: "right",
             }}
           >
-            {userName ? (
+            {username ? (
               <>
-                <MenuItem onClick={handleProfileMenuClose}>Hello, {userName}</MenuItem>
+                <MenuItem onClick={handleProfileMenuClose}>Hey, {username}</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </>
             ) : (

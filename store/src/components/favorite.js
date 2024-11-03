@@ -5,41 +5,73 @@ import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 function Favorite({ user_id, onAddToCart }) {
   const [likedProducts, setLikedProducts] = useState([]);
+  const [userId, setUserId] = useState('');
+
 
   useEffect(() => {
-    // Fetch liked products from the wishlist
-    axios.get(`http://localhost:8000/api/wishlist/Wishlist/`)
-      .then((response) => {
-        const wishlistItems = response.data.map(item => ({
-          id: item.id, // wishlist table ID
-          product: item.wishlist_product_id // product ID
-        }));
-        
-        // Fetch product details using the product IDs
-        const productRequests = wishlistItems.map(item => 
-          axios.get(`http://localhost:8000/api/product/products/${item.product}/`)
-        );
+    const sessionId = Cookies.get('sessionid');
+    const csrfToken = Cookies.get("csrftoken");
+  
+    if (sessionId) {
+      axios.post(
+        "http://localhost:8000/api/check-session/",
+        { session_id: sessionId },
+        {
+          headers: {
+            "X-CSRFToken": csrfToken,
+          },
+          withCredentials: true,
+        }
+      )
+        .then(response => {
+          if (response.data.username) {
+            setUserId(response.data.user_id);
+          }
+        })
+        .catch(error => {
+          console.error("Session verification error:", error);
+          setUserId(null);
+        });
+    }
+  }, []);
 
-        // Fetch all product details in parallel
-        Promise.all(productRequests)
-          .then((results) => {
-            const products = results.map((res, index) => ({
-              ...res.data,
-              wishlistId: wishlistItems[index].id // Attach wishlist table ID
-            }));
-            setLikedProducts(products); // Set the liked products
-          })
-          .catch((error) => {
-            console.error('Error fetching products:', error);
-          });
-      })
-      .catch((error) => {
-        console.error('Error fetching wishlist:', error);
-      });
-  }, [user_id]);
+  useEffect(() => {
+    if (userId) {  // Ensure userId is available before fetching
+      // Fetch liked products from the wishlist for the specific user
+      axios.get(`http://localhost:8000/api/wishlist/Wishlist/?wishlist_id=${userId}`)
+        .then((response) => {
+          const wishlistItems = response.data.map(item => ({
+            id: item.id, // wishlist table ID
+            product: item.wishlist_product_id // product ID
+          }));
+          
+          // Fetch product details using the product IDs
+          const productRequests = wishlistItems.map(item => 
+            axios.get(`http://localhost:8000/api/product/products/${item.product}/`)
+          );
+  
+          // Fetch all product details in parallel
+          Promise.all(productRequests)
+            .then((results) => {
+              const products = results.map((res, index) => ({
+                ...res.data,
+                wishlistId: wishlistItems[index].id // Attach wishlist table ID
+              }));
+              setLikedProducts(products); // Set the liked products
+            })
+            .catch((error) => {
+              console.error('Error fetching products:', error);
+            });
+        })
+        .catch((error) => {
+          console.error('Error fetching wishlist:', error);
+        });
+    }
+  }, [userId]);
 
   const handleBuyNow = (product) => {
     if (product.inStock) {

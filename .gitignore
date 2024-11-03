@@ -21,3 +21,55 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+# we created this on 03/11/2024
+
+# General Node.js (React)
+store/node_modules/
+store/build/
+store/dist/
+store/.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Django (Python) files
+trial/*.pyc
+trial/__pycache__/
+trial/db.sqlite3
+trial/.env
+
+# Django Migrations
+trial/app/migrations/
+trial/*/migrations/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+venv.bak/
+
+# Django Uploads and Media
+trial/uploads/
+
+# Editor & System Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Coverage, Pytest, and Testing Files
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+.hypothesis/
+

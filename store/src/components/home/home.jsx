@@ -312,6 +312,8 @@ import { useMediaQuery } from '@mui/material';
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import ImageSlider from '../imageSlider';
 import OfferZoneBanner from "../../components/OfferZoneBanner/offerZoneBanner";
+import Cookies from "js-cookie";
+
 
 function Home({ onUpdateCartItemCount }) {
   const [products, setProducts] = useState([]);
@@ -320,8 +322,37 @@ function Home({ onUpdateCartItemCount }) {
   const [message, setMessage] = useState('');
   const isMobile = useMediaQuery("(max-width:600px)");
   const navigate = useNavigate();  // Initialize useNavigate for page navigation
+  const [userId, setUserId] = useState("");
 
-  const userId = 1; // Static user ID, change to dynamic if needed
+
+  //const userId = 1; // Static user ID, change to dynamic if needed
+
+  useEffect(() => {
+    const sessionId = Cookies.get('sessionid');
+    const csrfToken = Cookies.get("csrftoken");
+  
+    if (sessionId) {
+      axios.post(
+        "http://localhost:8000/api/check-session/",
+        { session_id: sessionId },
+        {
+          headers: {
+            "X-CSRFToken": csrfToken,
+          },
+          withCredentials: true,
+        }
+      )
+        .then(response => {
+          if (response.data.username) {
+            setUserId(response.data.user_id);
+          }
+        })
+        .catch(error => {
+          console.error("Session verification error:", error);
+          setUserId(null);
+        });
+    }
+  }, []);
 
   // Fetch products from the backend
   const getProducts = async () => {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   Box,
@@ -12,6 +12,7 @@ import axios from "axios";
 import { FaGoogle } from "react-icons/fa";
 import img2 from "../../assets/loginimg/welcome1.png";
 import { Link, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 function Login() {
   const theme = useTheme();
@@ -19,24 +20,57 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
   const navigate = useNavigate();
+
+  // Check if the user is already logged in (Session persistence)
+  
+  useEffect(() => {
+    const sessionId = Cookies.get("sessionid"); // Use exact cookie name here
+    console.log("Session ID from cookie:", sessionId);
+    const csrfToken = Cookies.get("csrftoken");
+    if (sessionId) {
+      axios
+      .post(
+        "http://localhost:8000/api/check-session/",
+        { session_id: sessionId },
+        {
+          headers: {
+            "X-CSRFToken": csrfToken,  // Add the CSRF token to headers
+          },
+          withCredentials: true,
+        }
+      )
+        .then((response) => {
+          if (response.data.status === "active") {
+            navigate("/"); // Redirect if session is valid
+            
+          }
+        })
+        .catch((error) => {
+          //Cookies.remove("sessionid"); // Clear any cookie session data if error
+        });
+    }
+  }, [navigate]);
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post("http://localhost:8000/api/login/", {
-        username,
-        password,
-      }, { withCredentials: true }); // Send cookies with request
-
+      const response = await axios.post(
+        "http://localhost:8000/api/login/",
+        { username, password },
+        { withCredentials: true }
+      );
+  
       if (response.status === 200) {
-        // If login is successful, redirect or handle success
-        navigate("/"); // Redirect to the homepage or dashboard
+        const sessionKey = response.data.session_key;
+        localStorage.setItem("sessionKey", sessionKey);
+        navigate("/");
+        window.location.reload(); 
       }
     } catch (error) {
       setErrorMessage("Invalid credentials. Please try again.");
     }
   };
+ 
 
   return (
     <Box sx={{ py: 4, minHeight: "92.8vh" }}>
@@ -72,7 +106,7 @@ function Login() {
               }}
             >
               <Typography variant="h4" gutterBottom>
-                Welcome Back !
+                Welcome Back!
               </Typography>
               <Typography variant="h6" gutterBottom>
                 Welcome to your next opportunity.

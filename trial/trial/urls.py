@@ -3,8 +3,10 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from app.views import UserView
+from app import views
 
-from app.views import ProductView, CartView, OrderView, User_detailsView, PaymentView, WishlistView, ContactView, UserView
+
+from app.views import ProductView, CartView, OrderView, User_detailsView, PaymentView, WishlistView, ContactView, CheckSessionView, UserView, OTPView, CheckEmailView, login_view, logout_view 
 
 from rest_framework import routers
 
@@ -34,16 +36,26 @@ Contact_router = routers.DefaultRouter()
 Contact_router.register("Contact", ContactView, basename='Contact')
 
 
+otp_router = routers.DefaultRouter()
+otp_router.register(r'otp', OTPView, basename='otp')
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/register/', UserView.as_view({'post': 'create'}), name='register-user'),
-    path('api/login/', UserView.as_view({'post': 'list'}), name='login'),
-    path('api/product/', include(product_router.urls)),  # Route for products    
+    path('api/login/', login_view, name='login'),
+    path("api/logout/", logout_view, name="logout"),
+    path('api/check-session/', CheckSessionView.as_view(), name='check_session'),
+    path('api/product/', include(product_router.urls)),  # Route for products  
+    path('api/search/', views.search_products, name='search_products'),  
     path('api/', include(cart_router.urls)),     # Route for cart
     path('api/order/', include(Order_router.urls)),     # Route for cart
     path('api/', include(User_details_router.urls)),     # Route for cart
     path('api/', include(Payment_router.urls)),     # Route for cart
     path('api/wishlist/', include(Wishlist_router.urls)),     # Route for cart
     path('api/', include(Contact_router.urls)),     # Route for cart
+    path('api/', include(otp_router.urls)),
+    path('api/verify-otp/', OTPView.as_view({'post': 'verify'}), name='verify-otp'),
+     path('api/check-email/', CheckEmailView.as_view(), name='check_email'),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) +  static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User as auth_user
+import datetime
 
 # User Details Table
 
@@ -110,3 +111,9 @@ class Contact(models.Model):
 
     def __str__(self):
         return self.contact_name
+
+class PendingUser(models.Model):
+    email = models.EmailField(unique=True)
+    otp = models.CharField(max_length=6)
+    is_verified = models.BooleanField(default=False)
+    otp_expiration = models.DateTimeField(default=timezone.now() + timezone.timedelta(minutes=5))

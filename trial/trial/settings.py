@@ -48,7 +48,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'trial.wsgi.application'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
-SESSION_COOKIE_AGE =  2628288 
+SESSION_COOKIE_AGE =  2592000 #30 days
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -97,6 +97,13 @@ CORS_ORIGIN_WHITELIST =['http://localhost:3000']
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+]
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -149,4 +156,10 @@ EMAIL_USE_SSL = True  # Use SSL for port 465
 EMAIL_HOST_USER = 'gtgowtham6@gmail.com'
 EMAIL_HOST_PASSWORD = 'qbptysbjgszlgusl'
 DEFAULT_FROM_EMAIL = 'gtgowtham6@gmail.com' 
+
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
+
+SESSION_COOKIE_AGE = 1209600  # Two weeks
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_HTTPONLY = False 
 
