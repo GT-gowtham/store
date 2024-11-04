@@ -91,7 +91,7 @@ function App() {
 
   const handleCartCountChange = (newCount) => {
     setCartItemCount(newCount);
-  };
+  };
 
   return (
     <div className="App">
@@ -137,9 +137,14 @@ function App() {
           path="/product"
           element={
             <ProductCart
-              cartItems={cartItems}
-              handleRemoveItem={handleRemoveItem}
-              onCartCountChange={handleCartCountChange}
+            cartItems={cartItems}
+            onCartCountChange={handleCartCountChange}
+            onAddToCart={handleAddToCart}
+            onProductLiked={handleProductLiked}
+            products={products}
+            likedProducts={likedProducts.map((p) => p.id)}
+            onLikeToggle={handleLikeToggle}
+            onUpdateCartItemCount={updateCartItemCount}
             />
           }
         />

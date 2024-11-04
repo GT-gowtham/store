@@ -109,6 +109,7 @@ const Header = ({
       try {
         const response = await axios.get(`http://localhost:8000/api/search/?query=${query}`);
         setSearchResults(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching search results:", error);
       }
@@ -118,7 +119,13 @@ const Header = ({
   };
 
   const handleProductClick = (product) => {
+
+
+
+
+    
     navigate("/viewProduct", { state: { product } });
+    console.log( { product });
   };
 
   const menuItems = [
@@ -158,7 +165,7 @@ const Header = ({
             </IconButton>
           </Grid>
         )}
-        <Grid item lg={6} xs={8} display={isTablet ? "flex" : "block"}>
+        <Grid item lg={7} xs={8} display={isTablet ? "flex" : "block"}>
           <TextField
             value={searchTerm}
             onChange={handleSearchChange}
@@ -190,8 +197,9 @@ const Header = ({
               button
               key={product.id}
               onClick={() => handleProductClick(product)}
+              
             >
-              {product.name} - {product.description}
+              {product.product_name} 
             </ListItem>
           ))}
         </List>

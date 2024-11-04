@@ -8,28 +8,35 @@ const ViewProduct = ({ onAddToCart, likedProducts, onLikeToggle }) => {
   const [message, setMessage] = useState("");
   const [wishlistProducts, setWishlistProducts] = useState([]);
   const isMobile = useMediaQuery("(max-width:600px)");
-  const navigate = useNavigate(); // Use navigate instead of passing state in Link
   const location = useLocation();
-  const { product } = location.state; // Retrieve the product from location.state
-  const getProducts = async () => {
+  
+  const { product } = location.state || {};  // Retrieve the product from location.state
+console.log(product);
+  // const getProducts = async () => {
+  //   try {
+
+  //     const response = await axios.get("http://localhost:8000/api/product/products/");
+  //     const filteredProducts = response.data.filter(
+  //       (product) => product.product_category === "product"
+  //     );
+  //     setProducts(filteredProducts);
+  //   } catch (error) {
+  //     console.error("Error fetching products:", error);
+  //   }
+  // };
+
+  const getWishlist = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/product/products/", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log("API response:", response.data);
-      const filteredProducts = response.data.filter(
-        (product) => product.product_category === "product"
-      );
-      setProducts(filteredProducts);
+      const response = await axios.get("http://localhost:8000/api/wishlist/Wishlist/");
+      setWishlistProducts(response.data);  // Save the wishlist data
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error("Error fetching wishlist:", error);
     }
   };
 
   useEffect(() => {
-    getProducts();
+    // getProducts();
+    getWishlist();
   }, []);
 
   const isProductInWishlist = (productId) => {
@@ -37,6 +44,7 @@ const ViewProduct = ({ onAddToCart, likedProducts, onLikeToggle }) => {
       (wishlistItem) => wishlistItem.wishlist_product_id === productId
     );
   };
+
   const getWishlistId = (productId) => {
     const wishlistItem = wishlistProducts.find(
       (wishlistItem) => wishlistItem.wishlist_product_id === productId
@@ -44,85 +52,56 @@ const ViewProduct = ({ onAddToCart, likedProducts, onLikeToggle }) => {
     return wishlistItem ? wishlistItem.id : null;
   };
 
-  const getWishlist = async () => {
-    try {
-      const response = await axios.get("http://localhost:8000/api/wishlist/Wishlist/", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      setWishlistProducts(response.data); // Save the wishlist data
-    } catch (error) {
-      console.error("Error fetching wishlist:", error);
-    }
-  };
-
   const handleLikeClick = async (product) => {
     if (isProductInWishlist(product.id)) {
-      // If the product is already in the wishlist, remove it
       const wishlistId = getWishlistId(product.id);
       if (wishlistId) {
         try {
           await axios.delete(
-            `http://localhost:8000/api/wishlist/Wishlist/${wishlistId}/`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
+            `http://localhost:8000/api/wishlist/Wishlist/${wishlistId}/`
           );
-          console.log(`${product.product_name} removed from wishlist.`);
           setWishlistProducts(
             wishlistProducts.filter((item) => item.id !== wishlistId)
-          ); // Remove from state
+          );
         } catch (error) {
           console.error("Error removing from wishlist:", error);
         }
       }
     } else {
-      // If the product is not in the wishlist, add it
       try {
         const response = await axios.post(
           "http://localhost:8000/api/wishlist/Wishlist/",
           {
-            wishlist_id: 2, // User ID
-            wishlist_product_id: product.id, // Product ID
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            wishlist_id: 2,  // User ID
+            wishlist_product_id: product.id  // Product ID
           }
         );
-        console.log(`${product.product_name} added to the wishlist.`);
-        setWishlistProducts([...wishlistProducts, response.data]); // Add the new wishlist item to the state
+        setWishlistProducts([...wishlistProducts, response.data]);
       } catch (error) {
         console.error("Error adding to wishlist:", error);
       }
     }
   };
 
+  const handleAddToCart = () => {
+    if (onAddToCart) {
+      onAddToCart(product);
+    }
+  };
+
+  if (!product) return <Typography variant="h6">Product not found.</Typography>;
+
   return (
     <Box sx={{ padding: { xs: 2, md: 4 }, marginTop: 4 }}>
       <Grid container spacing={4}>
-        {/* Product Image */}
-        <Grid
-          item
-          xs={12}
-          md={6}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-        >
+        <Grid item xs={12} md={6} display="flex" justifyContent="center" alignItems="center">
           <div style={{ border: "2px solid #550a35", borderRadius: "8px" }}>
             <div
               className="favorite-button"
               onClick={() => handleLikeClick(product)}
               style={{
                 color: isProductInWishlist(product.id) ? "red" : "black",
-                border: "none",
-                background: "none",
-                padding: "10px",
+                padding: "10px"
               }}
             >
               {isProductInWishlist(product.id) ? "❤️" : "♡"}
@@ -130,16 +109,10 @@ const ViewProduct = ({ onAddToCart, likedProducts, onLikeToggle }) => {
             <img
               src={product.product_image}
               alt={product.product_name}
-              style={{
-                width: "100%",
-                maxWidth: "500px",
-                objectFit: "cover",
-              }}
+              style={{ width: "100%", maxWidth: "500px", objectFit: "cover" }}
             />
           </div>
         </Grid>
-
-        {/* Product Details */}
         <Grid item xs={12} md={6} display="flex" flexDirection="column">
           <Typography variant="h4" gutterBottom style={{ color: "#550a35" }}>
             {product.product_name}
@@ -153,13 +126,11 @@ const ViewProduct = ({ onAddToCart, likedProducts, onLikeToggle }) => {
           <Grid container alignItems={"flex-end"} height={"300px"}>
             <Grid item lg={6}>
               <button className="buy-now" style={{ width: "30vh" }}>
-                <Link to="/address" style={{ color: "white" }}>
-                  Buy Now
-                </Link>
+                <Link to="/address" style={{ color: "white" }}>Buy Now</Link>
               </button>
             </Grid>
             <Grid>
-              <button className="cart" style={{ width: "30vh" }}>
+              <button className="cart" style={{ width: "30vh" }} onClick={handleAddToCart}>
                 Add Cart
               </button>
             </Grid>

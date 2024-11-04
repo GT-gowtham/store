@@ -226,9 +226,9 @@ def logout_view(request):
 def search_products(request):
     query = request.GET.get('query', '')
     if query:
-        # Update the filter to use 'product_name'
+        # Filter products based on the product name containing the query
         products = Product.objects.filter(product_name__icontains=query)
-        # Prepare your response here, for example:
-        product_list = [{'id': product.id, 'name': product.product_name} for product in products]
-        return Response(product_list)
+        # Serialize the data with context to get the full URL
+        serializer = ProductSerializer(products, many=True, context={'request': request})
+        return Response(serializer.data)
     return Response([])

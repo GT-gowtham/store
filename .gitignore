@@ -73,3 +73,10 @@ coverage.xml
 *.cover
 .hypothesis/
 
+*.pyc
+*.pyc
+*.pyc
+/trial/app/__pycache__
+trial/app/migrations/__pycache__/0003_auto_20241014_1553.cpython-312.pyc
+trial/app/migrations/__pycache__/0002_product_product_qty.cpython-312.pyc
+trial/app/migrations/__pycache__/0002_product_product_qty.cpython-312.pyc
