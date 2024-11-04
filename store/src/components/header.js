@@ -119,13 +119,9 @@ const Header = ({
   };
 
   const handleProductClick = (product) => {
-
-
-
-
-    
     navigate("/viewProduct", { state: { product } });
-    console.log( { product });
+    setSearchTerm("");  // Clear the search bar
+    setSearchResults([]);  // Clear the search results
   };
 
   const menuItems = [

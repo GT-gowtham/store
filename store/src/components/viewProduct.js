@@ -2,28 +2,42 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Grid, Typography, Box, Button, useMediaQuery } from "@mui/material";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const ViewProduct = ({ onAddToCart, likedProducts, onLikeToggle }) => {
-  const [products, setProducts] = useState([]);
-  const [message, setMessage] = useState("");
   const [wishlistProducts, setWishlistProducts] = useState([]);
   const isMobile = useMediaQuery("(max-width:600px)");
   const location = useLocation();
+  const [userId, setUserId] = useState("");
   
   const { product } = location.state || {};  // Retrieve the product from location.state
-console.log(product);
-  // const getProducts = async () => {
-  //   try {
 
-  //     const response = await axios.get("http://localhost:8000/api/product/products/");
-  //     const filteredProducts = response.data.filter(
-  //       (product) => product.product_category === "product"
-  //     );
-  //     setProducts(filteredProducts);
-  //   } catch (error) {
-  //     console.error("Error fetching products:", error);
-  //   }
-  // };
+  useEffect(() => {
+    const sessionId = Cookies.get('sessionid');
+    const csrfToken = Cookies.get("csrftoken");
+  
+    if (sessionId) {
+      axios.post(
+        "http://localhost:8000/api/check-session/",
+        { session_id: sessionId },
+        {
+          headers: {
+            "X-CSRFToken": csrfToken,
+          },
+          withCredentials: true,
+        }
+      )
+        .then(response => {
+          if (response.data.username) {
+            setUserId(response.data.user_id);
+          }
+        })
+        .catch(error => {
+          console.error("Session verification error:", error);
+          setUserId(null);
+        });
+    }
+  }, []);
 
   const getWishlist = async () => {
     try {
@@ -72,7 +86,7 @@ console.log(product);
         const response = await axios.post(
           "http://localhost:8000/api/wishlist/Wishlist/",
           {
-            wishlist_id: 2,  // User ID
+            wishlist_id: userId,  // User ID
             wishlist_product_id: product.id  // Product ID
           }
         );
