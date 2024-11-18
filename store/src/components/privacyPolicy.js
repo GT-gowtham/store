@@ -1,8 +1,11 @@
 import { Breadcrumbs, Container, Grid, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { TypographyStyle } from "../styled/privacyStyle";
 
 const PrivacyPolicy = () => {
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, []);
   return (
     <div>
       <Container>

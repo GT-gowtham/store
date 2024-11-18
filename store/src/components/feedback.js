@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Rating from "@mui/material/Rating";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -7,7 +7,9 @@ import { Container, Grid, TextField } from "@mui/material";
 
 function FeedBack() {
   const [value, setValue] = useState(5); // Initial value set for demonstration
-
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, []);
   return (
     <Container>
       <Grid

@@ -1,51 +1,63 @@
-import { Button, Grid, Typography } from '@mui/material';
-import axios from 'axios';
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Button, Grid, Typography, Box } from "@mui/material";
+import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ShippingAddressForm = () => {
-  const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
-  const [city, setCity] = useState('');
-  const [country, setCountry] = useState('India');
-  const [state, setState] = useState('');
-  const [pinCode, setPinCode] = useState('');
-  const [phone, setPhone] = useState('');
-  const [userId, setUserId] = useState('1');
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("India");
+  const [state, setState] = useState("");
+  const [pinCode, setPinCode] = useState("");
+  const [phone, setPhone] = useState("");
+  // const [userId, setUserId] = useState("1");
   const [errors, setErrors] = useState({});
-  const [isDifferentBillingAddress, setIsDifferentBillingAddress] = useState(false);
+  const [isDifferentBillingAddress, setIsDifferentBillingAddress] =
+    useState(false);
   const [submittedAddresses, setSubmittedAddresses] = useState([]);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const { addressData, index } = location.state || {}
+  const product = location.state?.product || {}; // Corrected naming for consistency
+  const quantity = location.state?.quantity || {};
+  const price = location.state?.price || {};
+  const User = location.state?.user || {};
 
   useEffect(() => {
-    const savedAddresses = localStorage.getItem('submittedAddresses');
+    const savedAddresses = localStorage.getItem("submittedAddresses");
     if (savedAddresses) {
       setSubmittedAddresses(JSON.parse(savedAddresses));
     }
-  }, []);
+
+    if (addressData) {
+      setName(addressData.name);
+      setAddress(addressData.address);
+      setCity(addressData.city);
+      setCountry(addressData.country);
+      setState(addressData.state);
+      setPinCode(addressData.pinCode);
+      setPhone(addressData.phone);
+    }
+  }, [addressData]);
 
   const validate = () => {
     let newErrors = {};
-    if (!userId.trim()) newErrors.userId = 'User ID is required';
-    if (!name.trim()) newErrors.name = 'Name is required';
-    if (!address.trim()) newErrors.address = 'Address is required';
-    if (!city.trim()) newErrors.city = 'City is required';
-    if (!state.trim()) newErrors.state = 'State is required';
+    if (!User.trim()) newErrors.User = "User ID is required";
+    if (!name.trim()) newErrors.name = "Name is required";
+    if (!address.trim()) newErrors.address = "Address is required";
+    if (!city.trim()) newErrors.city = "City is required";
+    if (!state.trim()) newErrors.state = "State is required";
     if (!pinCode.trim()) {
-      newErrors.pinCode = 'Pin Code is required';
+      newErrors.pinCode = "Pin Code is required";
     } else if (!/^\d{6}$/.test(pinCode)) {
-      newErrors.pinCode = 'Invalid Pin Code';
+      newErrors.pinCode = "Invalid Pin Code";
     }
     if (!phone.trim()) {
-      newErrors.phone = 'Phone number is required';
+      newErrors.phone = "Phone number is required";
     } else if (!/^\d{10}$/.test(phone)) {
-      newErrors.phone = 'Invalid Phone number';
-    }
-    
-    // Checkbox validation
-    if (!isDifferentBillingAddress.trim) {
-      newErrors.isDifferentBillingAddress = 'Please check if Shipping and Billing address are different.';
+      newErrors.phone = "Invalid Phone number";
     }
 
     setErrors(newErrors);
@@ -54,7 +66,7 @@ const ShippingAddressForm = () => {
 
   const addAddress = async () => {
     const datas = {
-      user_ID: userId.trim(),
+      user_ID: User.trim(),
       user_name: name.trim(),
       user_address: address.trim(),
       user_city: city.trim(),
@@ -62,25 +74,28 @@ const ShippingAddressForm = () => {
       user_state: state.trim(),
       user_pincode: pinCode.trim(),
       user_phone: phone.trim(),
-      user_checkboxes: isDifferentBillingAddress.trim(),
+      user_checkboxes: isDifferentBillingAddress,
     };
-
+console.log(datas);
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/User_details/', datas, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/User_details/",
+        datas,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.status === 201) {
-        return response; // Return the response to handle in handleSubmit
+        return response;
       }
     } catch (error) {
-      if (error.response) {
-        console.error("Error Data:", error.response.data);
-      } else {
-        console.error("General Error:", error.message);
-      }
+      console.error(
+        "Error submitting address:",
+        error.response?.data || error.message
+      );
     }
   };
 
@@ -100,232 +115,219 @@ const ShippingAddressForm = () => {
             phone,
             isDifferentBillingAddress,
           };
-          setSubmittedAddresses((prevAddresses) => [...prevAddresses, addressData]);
-          localStorage.setItem('submittedAddresses', JSON.stringify([...submittedAddresses, addressData]));
+
+          const updatedAddresses =
+            index !== undefined
+              ? submittedAddresses.map((addr, i) =>
+                  i === index ? addressData : addr
+                )
+              : [...submittedAddresses, addressData];
+
+          setSubmittedAddresses(updatedAddresses);
+          localStorage.setItem(
+            "submittedAddresses",
+            JSON.stringify(updatedAddresses)
+          );
+          navigate("/addAddress", {
+            state: {
+              user: User,
+              submittedAddresses: updatedAddresses,
+              product,
+              quantity,
+              price,
+            },
+          });
+
           handleAdd();
         }
       } catch (error) {
-        console.error('Error submitting form:', error);
-      }
-    }
-  };
-
-  const handleEdit = (index) => {
-    const addressToEdit = submittedAddresses[index];
-    if (addressToEdit) {
-      setName(addressToEdit.name);
-      setAddress(addressToEdit.address);
-      setCity(addressToEdit.city);
-      setCountry(addressToEdit.country);
-      setState(addressToEdit.state);
-      setPinCode(addressToEdit.pinCode);
-      setPhone(addressToEdit.phone);
-      setSubmittedAddresses((prevAddresses) => prevAddresses.filter((_, i) => i !== index));
-      localStorage.setItem('submittedAddresses', JSON.stringify(submittedAddresses));
-    }
-  };
-
-  const handleDelete = (index) => {
-    const updatedAddresses = submittedAddresses.filter((_, i) => i !== index);
-    setSubmittedAddresses(updatedAddresses);
-    localStorage.setItem('submittedAddresses', JSON.stringify(updatedAddresses)); // Update localStorage
-  };
+        console.error("Error submitting form:", error);
+      }
+    }
+  };
 
   const handleAdd = () => {
-    setName('');
-    setAddress('');
-    setCity('');
-    setState('');
-    setPinCode('');
-    setPhone('');
-    setIsDifferentBillingAddress(false); 
+    setName("");
+    setAddress("");
+    setCity("");
+    setState("");
+    setPinCode("");
+    setPhone("");
+    setIsDifferentBillingAddress(false);
   };
 
   return (
-    <div>
-      <Grid container>
-        <Grid item lg={6} style={{ display: "flex", justifyContent: "center", alignItems: "center" }} mt={7}>
-          {submittedAddresses.length > 0 && (
-            <div style={styles.summary}>
-              <Typography style={{ textAlign: "center", fontWeight: "bold", color: "#550a35", }} variant='h4'>Shipping Address Summary</Typography>
-              {submittedAddresses.map((address, index) => (
-                <div key={index}>
-                  <p><strong style={styles.text}>Name:</strong> {address.name}</p>
-                  <p><strong style={styles.text}>Address:</strong> {address.address}</p>
-                  <p><strong style={styles.text}>City:</strong> {address.city}</p>
-                  <p><strong style={styles.text}>Country:</strong> {address.country}</p>
-                  <p><strong style={styles.text}>State:</strong> {address.state}</p>
-                  <p><strong style={styles.text}>Pin Code:</strong> {address.pinCode}</p>
-                  <p><strong style={styles.text}>Phone:</strong> {address.phone}</p>
-                  <div style={{ display: "flex", marginBottom: "10px" }}>
-                    <Button onClick={() => handleEdit(index)} style={{ backgroundColor: "#550a35", color: "white", textTransform: "capitalize", margin: "10px" }}>
-                      Edit Address
-                    </Button>
-                    <Button onClick={() => handleDelete(index)} style={{ backgroundColor: "#550a35", color: "white", textTransform: "capitalize", margin: "10px" }}>
-                      Delete Address
-                    </Button>
-                    <Button onClick={() => navigate('/payment')} style={{ backgroundColor: "#550a35", color: "white", textTransform: "capitalize", margin: "10px" }}>
-                      Proceed to Payment
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Grid>
-        <Grid item lg={submittedAddresses.length > 0 ? 6 : 12} mt={7}>
-          <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+    <Box sx={styles.container}>
+      <Grid container justifyContent="center">
+        <Grid item xs={12} sm={8} md={6} lg={3.5}>
+          <Box sx={styles.formWrapper}>
             <form onSubmit={handleSubmit} style={styles.form}>
-              <Typography style={{ textAlign: "center", fontWeight: "bold", color: "#550a35", }} variant='h4'>Create New Address</Typography>
-              <div style={styles.formGroup}>
-                <label>Name:</label>
+              <Typography sx={styles.title} variant="h4">
+                Shipping Address
+              </Typography>
+
+              {["name", "address", "city", "state", "pinCode", "phone"].map(
+                (field) => (
+                  <div style={styles.formGroup} key={field}>
+                    <label style={styles.label}>
+                      {field.charAt(0).toUpperCase() + field.slice(1)}:
+                    </label>
+                    <input
+                      type="text"
+                      name={field}
+                      value={eval(field)}
+                      onChange={(e) =>
+                        eval(
+                          `set${
+                            field.charAt(0).toUpperCase() + field.slice(1)
+                          }(e.target.value)`
+                        )
+                      }
+                      style={styles.input}
+                    />
+                    {errors[field] && (
+                      <p style={styles.error}>{errors[field]}</p>
+                    )}
+                  </div>
+                )
+              )}
+
+              <div style={styles.checkboxGroup}>
                 <input
-                  type="text"
-                  name="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  style={styles.input}
+                  type="checkbox"
+                  checked={isDifferentBillingAddress}
+                  onChange={(e) =>
+                    setIsDifferentBillingAddress(e.target.checked)
+                  }
                 />
-                {errors.name && <p style={styles.error}>{errors.name}</p>}
+                <label style={styles.checkboxLabel}>
+                  Different Billing Address
+                </label>
               </div>
 
-              <div style={styles.formGroup}>
-                <label>Address:</label>
-                <input
-                  type="text"
-                  name="address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  style={styles.input}
-                />
-                {errors.address && <p style={styles.error}>{errors.address}</p>}
-              </div>
-
-              <div style={styles.formGroup}>
-                <label>City:</label>
-                <input
-                  type="text"
-                  name="city"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  style={styles.input}
-                />
-                {errors.city && <p style={styles.error}>{errors.city}</p>}
-              </div>
-
-              <div style={styles.formGroup}>
-                <label>Country:</label>
-                <select
-                  name="country"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  style={styles.input}
-                >
-                  <option value="India">India</option>
-                </select>
-              </div>
-
-              <div style={styles.formGroup}>
-                <label>State:</label>
-                <input
-                  type="text"
-                  name="state"
-                  value={state}
-                  onChange={(e) => setState(e.target.value)}
-                  style={styles.input}
-                />
-                {errors.state && <p style={styles.error}>{errors.state}</p>}
-              </div>
-
-              <div style={styles.formGroup}>
-                <label>Pin Code:</label>
-                <input
-                  type="text"
-                  name="pinCode"
-                  value={pinCode}
-                  onChange={(e) => setPinCode(e.target.value)}
-                  style={styles.input}
-                />
-                {errors.pinCode && <p style={styles.error}>{errors.pinCode}</p>}
-              </div>
-
-              <div style={styles.formGroup}>
-                <label>Phone:</label>
-                <input
-                  type="text"
-                  name="phone"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  style={styles.input}
-                />
-                {errors.phone && <p style={styles.error}>{errors.phone}</p>}
-              </div>
-
-              <div style={styles.formGroup}>
-        <label>
-        <input
-  type="checkbox"
-  name="isDifferentBillingAddress"
-  checked={isDifferentBillingAddress}
-  onChange={(e) => setIsDifferentBillingAddress(e.target.value)} // Updated to e.target.checked
-/>
-          {' '}Check if Shipping and Billing address are different.
-        </label>
-                {errors.isDifferentBillingAddress && <p style={styles.error}>{errors.isDifferentBillingAddress}</p>}
-              </div>
-
-              <Button type="submit" style={{ backgroundColor: "#550a35", color: "white", textTransform: "capitalize", marginTop: "20px" }}>
-                Submit Address
+              <Button
+                variant="contained"
+                type="submit"
+                sx={styles.submitButton}
+              >
+                {index !== undefined ? "Update Address" : "submit"}
               </Button>
             </form>
-          </div>
+          </Box>
         </Grid>
       </Grid>
-    </div>
+    </Box>
   );
 };
 
 const styles = {
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
+    padding: "10px", // Reduced padding
+    backgroundColor: "#f5f5f5",
+  },
+  formWrapper: {
+    backgroundColor: "#fff",
+    borderRadius: "8px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+    padding: "20px", // Reduced padding
+    width: "100%",
+  },
   form: {
-    display: 'flex',
-    flexDirection: 'column',
-    maxWidth: '400px',
-    width: '100%',
-    border:"2px solid #e0e0e0",
-    padding: '40px',
-    borderRadius: '8px',  
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
+  title: {
+    textAlign: "center",
+    fontWeight: "bold",
+    color: "#550a35",
+    marginBottom: "20px",
+  },
+  label: {
+    fontWeight: "500",
+    fontSize: "16px",
+    marginBottom: "8px",
+    color: "#550a35",
   },
   formGroup: {
-    marginBottom: '20px',
+    marginBottom: "20px",
+    width: "100%",
   },
   input: {
-    padding: '10px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    width: '100%',
+    width: "90%",
+    padding: "10px",
+    border: "1px solid #550a35",
+    borderRadius: "4px",
   },
   error: {
-    color: 'red',
-    fontSize: '12px',
-  },
-  summary: {
-    backgroundColor: '#f9f9f9',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-    marginBottom: '20px',
+    color: "red",
+    fontSize: "12px",
+    marginTop: "5px",
   },
   checkboxGroup: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '20px',
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "16px",
+    justifyContent: "flex-start", // Align checkbox and label to the left
   },
   checkboxLabel: {
-    marginLeft: '10px',
+    marginLeft: "8px",
+    fontSize: "14px",
   },
-  text: {
-    fontWeight: 'bold',
-  }
+  submitButton: {
+    backgroundColor: "#550a35",
+    color: "#fff",
+    textTransform: "capitalize",
+    padding: "12px 20px", // Reduced button size
+    fontSize: "16px",
+    fontWeight: "600",
+    width: "80%", // Reduced width
+    "&:hover": {
+      backgroundColor: "#550a35",
+    },
+  },
+  "@media (max-width: 600px)": {
+    // Mobile view
+    formWrapper: {
+      padding: "15px", // Further reduced padding for mobile
+    },
+    input: {
+      width: "100%", // Full width on mobile
+    },
+    submitButton: {
+      width: "100%", // Full width on mobile
+    },
+  },
+  "@media (min-width: 601px) and (max-width: 1024px)": {
+    // Tablet view
+    formWrapper: {
+      padding: "20px",
+    },
+    input: {
+      width: "95%",
+    },
+    submitButton: {
+      width: "85%",
+    },
+  },
+  "@media (min-width: 1025px)": {
+    // Laptop and above
+    formWrapper: {
+      padding: "30px",
+    },
+    input: {
+      width: "90%",
+    },
+    submitButton: {
+      width: "80%",
+    },
+  },
 };
 
 export default ShippingAddressForm;

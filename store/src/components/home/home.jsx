@@ -239,7 +239,7 @@ import React, { useState, useEffect } from "react";
 import "./home.css";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { useMediaQuery } from "@mui/material";
+import { Snackbar, useMediaQuery } from "@mui/material";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import ImageSlider from "../imageSlider";
 import OfferZoneBanner from "../../components/OfferZoneBanner/offerZoneBanner";
@@ -253,34 +253,11 @@ function Home({ onUpdateCartItemCount }) {
   const isMobile = useMediaQuery("(max-width:600px)");
   const navigate = useNavigate();
   const [userId, setUserId] = useState("");
+  const [snackbarColor, setSnackbarColor] = useState("green"); // Default color
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const handleCloseSnackbar = () => setOpenSnackbar(false);
 
   //const userId = 1; // Static user ID, change to dynamic if needed
-  useEffect(() => {
-    const sessionId = Cookies.get('sessionid');
-    const csrfToken = Cookies.get("csrftoken");
-  
-    if (sessionId) {
-      axios.post(
-        "http://localhost:8000/api/check-session/",
-        { session_id: sessionId },
-        {
-          headers: {
-            "X-CSRFToken": csrfToken,
-          },
-          withCredentials: true,
-        }
-      )
-        .then(response => {
-          if (response.data.username) {
-            setUserId(response.data.user_id);
-          }
-        })
-        .catch(error => {
-          console.error("Session verification error:", error);
-          setUserId(null);
-        });
-    }
-  }, []);
   // Fetch products from the backend
   const getProducts = async () => {
     try {
@@ -299,30 +276,37 @@ function Home({ onUpdateCartItemCount }) {
   };
 
   // Fetch wishlist products
-  const getWishlist = async () => {
+  const getWishlist = async (userId) => {
     try {
       const response = await axios.get("http://localhost:8000/api/wishlist/Wishlist/", {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      setWishlistProducts(response.data);
+      const filteredwishlist = response.data.filter(
+        (wishlist) => wishlist.wishlist_id == userId
+      );
+      setWishlistProducts(filteredwishlist);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
     }
   };
 
   // Fetch cart products
-  const getCart = async () => {
+  const getCart = async (userId) => {
     try {
       const response = await axios.get("http://localhost:8000/api/cart/", {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      const cartData = response.data;
+      const cartData = response.data.filter(
+        
+        (cart) => cart.cart_id == userId
+      );
+      
       setCartProducts(cartData);
-
+      console.log(cartData)
       if (cartData.length > 0) {
         localStorage.setItem("cartCount", cartData.length);
       } else {
@@ -336,14 +320,43 @@ function Home({ onUpdateCartItemCount }) {
   };
 
   useEffect(() => {
-    getProducts();
-    getWishlist();
-    getCart(); // Fetch both products and wishlist when the component mounts
-
-    // Get the cart count from localStorage and update the state
-    const savedCartCount = localStorage.getItem("cartCount");
-    if (savedCartCount) {
-      onUpdateCartItemCount(parseInt(savedCartCount, 10));
+    const sessionId = Cookies.get('sessionid');
+    const csrfToken = Cookies.get("csrftoken");
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    if (sessionId) {
+      axios.post(
+        "http://localhost:8000/api/check-session/",
+        { session_id: sessionId },
+        {
+          headers: {
+            "X-CSRFToken": csrfToken,
+          },
+          withCredentials: true,
+        }
+      )
+        .then(async response => {
+          if (response.data.username) {
+           await setUserId(response.data.user_id);
+            // console.log("response.data.user_id",response.data.user_id)
+            // console.log("2")
+            getProducts();
+            getWishlist(response.data.user_id);
+            getCart(response.data.user_id); // Fetch both products and wishlist when the component mounts
+        
+            // Get the cart count from localStorage and update the state
+            const savedCartCount = localStorage.getItem("cartCount");
+            if (savedCartCount) {
+              onUpdateCartItemCount(parseInt(savedCartCount, 10));
+            }
+          }
+        })
+        .catch(error => {
+          console.error("Session verification error:", error);
+          setUserId(null);
+        });
+    }
+    else {
+      getProducts();
     }
   }, []);
 
@@ -401,13 +414,17 @@ function Home({ onUpdateCartItemCount }) {
 
   // Handle Add to Cart click
   const handleAddToCartClick = async (product) => {
-    if (product.product_qty < 1) {
+    if (product.product_stock < 1) {
       setMessage(`${product.product_name} is out of stock!`);
+      setSnackbarColor("red");
+      setOpenSnackbar(true);
       return;
     }
 
     if (isProductInCart(product.id)) {
       setMessage(`${product.product_name} is already in your cart.`);
+      setSnackbarColor("red");
+      setOpenSnackbar(true);
       return;
     }
 
@@ -424,19 +441,14 @@ function Home({ onUpdateCartItemCount }) {
       );
 
       setMessage(`${product.product_name} added to the cart successfully!`);
+      setSnackbarColor("green");
+      setOpenSnackbar(true);
       getCart(); // Refresh the cart list
     } catch (error) {
       console.error("Error adding to cart:", error);
     }
   };
 
-  const handleBuyNow = (product) => {
-    if (product.product_qty > 0) {
-      setMessage(`You have successfully bought ${product.product_name}`);
-    } else {
-      setMessage(`${product.product_name} is out of stock!`);
-    }
-  };
 
   const handleProductClick = (product) => {
     navigate("/viewProduct", { state: { product } });
@@ -516,7 +528,18 @@ function Home({ onUpdateCartItemCount }) {
             </div>
           </div>
         ))}
-        {message && <div className="message">{message}</div>}
+             <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={openSnackbar}
+        onClose={handleCloseSnackbar}
+        message={message}
+        autoHideDuration={3000}
+        sx={{
+          "& .MuiSnackbarContent-root": {
+            backgroundColor: snackbarColor,
+          },
+        }}
+      />
       </div>
     </div>
   );

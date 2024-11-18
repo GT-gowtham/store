@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './ContactPage.css';
 import { FaFacebook } from "react-icons/fa6";
 import { FaSquareInstagram } from "react-icons/fa6";
@@ -66,6 +66,9 @@ const ContactPage = () => {
             }
         }
     };
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      }, []);
 
     return (
         <div className="contact-page">

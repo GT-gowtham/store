@@ -32,6 +32,16 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
+        extra_kwargs = {
+            'quantity': {'required': False},
+            'total_price': {'required': False},
+            'payment_method': {'required': False},
+            'status': {'required': False},
+            'payment_status': {'required': False},
+            'user': {'required': False},
+            'product': {'required': False},
+            'user_address': {'required': False}
+        }
 
 class User_detailsSerializer(serializers.ModelSerializer):
     class Meta:

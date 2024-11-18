@@ -166,7 +166,6 @@ const Header = ({
             value={searchTerm}
             onChange={handleSearchChange}
             hiddenLabel
-            defaultValue=""
             placeholder="Search for products, brands and more"
             variant="standard"
             InputProps={{

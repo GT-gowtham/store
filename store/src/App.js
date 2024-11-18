@@ -24,6 +24,8 @@ import Signup from './components/login/signup';
 import NewPassword from './components/login/newPassword';
 import Otppage from './components/login/otp';
 import ViewProduct from './components/viewProduct';
+import AddAddress from "./components/address/addadress"
+import OrderSummary from './components/home/ordersummary';
 
 const products = [
   {
@@ -116,6 +118,8 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/address" element={<Address />} />
+        <Route path="/addaddress" element={<AddAddress />} />
+        <Route path="/ordersummary" element={<OrderSummary />} />
         <Route
           path="/viewProduct"
           element={
@@ -123,6 +127,7 @@ function App() {
               likedProducts={likedProducts}
               onAddToCart={handleAddToCart}
               onLikeToggle={handleLikeToggle}
+              onUpdateCartItemCount={updateCartItemCount}
             />
           }
         />
@@ -130,7 +135,7 @@ function App() {
         <Route path="/offerproduct" element={<OfferProduct  likedProducts={likedProducts}
               onAddToCart={handleAddToCart}
               onLikeToggle={handleLikeToggle}
-              
+              onUpdateCartItemCount={updateCartItemCount}
               />} />
         <Route path="/underconstruction" element={<UnderConstruction />} />
         <Route

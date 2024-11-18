@@ -5,7 +5,6 @@ import {
   Button,
   Card,
   Container,
-  Fade,
   FormControl,
   FormControlLabel,
   Grid,
@@ -15,30 +14,45 @@ import {
   useMediaQuery,
   Box,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import CodIcon from "../assets/cod.png"; // Cash on Delivery icon
-import GpayIcon from "../assets/gpay.webp"; // Google Pay icon
-import PhonePayIcon from "../assets/phonepay.png"; // PhonePe icon
-import Online from "../assets/online.jpg"; // Online Delivery icon
-import { Link } from 'react-router-dom';
+import CodIcon from "../assets/cod.png";
+import GpayIcon from "../assets/gpay.webp";
+import PhonePayIcon from "../assets/phonepay.png";
+import Online from "../assets/online.jpg";
+import axios from "axios";
+import { Link, useLocation } from "react-router-dom";
 
 const Payment = () => {
+  const location = useLocation();
+  const selectedAddress = location.state?.selectedAddress || {};
+  const quantity = location.state?.quantity || {};
+  const product = location.state?.product || {};
+  const price = location.state?.price || {};
+  const User = location.state?.User || {};
   const isMobile = useMediaQuery("(max-width:600px)");
   const [deliveryType, setDeliveryType] = useState("Cash on Delivery");
-  const [paymentMethod, setPaymentMethod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
   const [expanded, setExpanded] = useState(false);
-  const [orderMessage, setOrderMessage] = useState('');
+  const [orderMessage, setOrderMessage] = useState("");
+  const [userId, setUserId] = useState(1);
+  const [addressId, setAddressId] = useState(selectedAddress.id || "");
+  const [orderPlaced, setOrderPlaced] = useState("");
 
-  
+  useEffect(() => {
+    if (selectedAddress && selectedAddress.id) {
+      setAddressId(selectedAddress.id);
+    }
+    setOrderPlaced(product.payment_status);
+  }, [selectedAddress]);
 
   const handlePayment = (event) => {
-    setPaymentMethod(event.target.value); // Update state with the selected payment method
+    setPaymentMethod(event.target.value);
   };
 
   const handleDeliveryChange = (event) => {
-    setDeliveryType(event.target.value); // Update state with the selected delivery type
-    setPaymentMethod(""); // Clear payment method when delivery type changes
+    setDeliveryType(event.target.value);
+    setPaymentMethod("");
   };
 
   const handleExpansion = () => {
@@ -55,34 +69,53 @@ const Payment = () => {
     return "Place Order";
   };
 
-  const placeOrder = () => {
-    // Trigger the order placement logic here
-    setOrderMessage("Your order has been placed successfully!");
+  const placeOrder = async () => {
+    const datas = {
+      id: userId,
+      user: User,
+      product: product,
+      quantity: parseInt(quantity),
+      total_price: parseInt(price),
+      payment_method: paymentMethod,
+      user_address: addressId,
+      status: orderPlaced,
+      payment_status:
+        deliveryType === "Cash on Delivery" ? "Pending" : "Completed",
+      delivery_status: "Processing",
+    };
 
-    // Clear the message after 3 seconds
-    setTimeout(() => {
-      setOrderMessage("");
-    }, 3000); // 3000ms = 3 seconds
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/order/Order/",
+        datas,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        setOrderMessage("Your order has been placed successfully!");
+        setTimeout(() => {
+          setOrderMessage("");
+        }, 3000);
+      }
+    } catch (error) {
+      console.error(error.response ? error.response.data : error.message);
+    }
   };
-
-  
 
   return (
     <div>
       <Container>
-        <Grid
-          container
-          spacing={6}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          direction="column"
-        >
+        <Grid container spacing={6} justifyContent="center" alignItems="center">
           <Grid item xs={12} display="flex" justifyContent="center" mt={10}>
             <Typography variant="h4" style={{ fontWeight: "bold" }}>
               Select Payment Method
             </Typography>
           </Grid>
+
           <Grid item style={{ paddingLeft: isMobile ? "30px" : "" }}>
             <FormControl>
               <RadioGroup
@@ -292,21 +325,15 @@ const Payment = () => {
               </RadioGroup>
             </FormControl>
           </Grid>
-          <Grid item>
-            <Button
-              style={{ textTransform: "capitalize", marginTop: "5vh" }}
-              variant="contained"
-              onClick={placeOrder}
-            >
-              <Link to="/orderConfirm">
-              {getButtonText()}</Link>
-            </Button>
-            {orderMessage && (
-              <Typography variant="h6" color="green" mt={2}>
-                {orderMessage}
-              </Typography>
-            )}
-          </Grid>
+        </Grid>
+        <Grid item container justifyContent={"center"}>
+          <Button
+            style={{ textTransform: "capitalize", marginTop: "5vh" }}
+            variant="contained"
+            onClick={placeOrder}
+          >
+            <Link to="/orderConfirm">{getButtonText()}</Link>
+          </Button>
         </Grid>
       </Container>
     </div>

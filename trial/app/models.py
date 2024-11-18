@@ -46,10 +46,10 @@ class Order(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=2)  # Order Price
     payment_method = models.CharField(max_length=50)  # Payment Method
     user_address = models.ForeignKey(User_details, on_delete=models.CASCADE)  # User Address
-    status = models.CharField(max_length=10, default='PENDING')  # Order Status
+    status = models.CharField(max_length=150, default='PENDING')  # Order Status
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
-    payment_status = models.CharField(max_length=50, choices=[
+    payment_status = models.CharField(max_length=250, choices=[
         ('Pending', 'Pending'),
         ('Completed', 'Completed'),
         ('Failed', 'Failed')

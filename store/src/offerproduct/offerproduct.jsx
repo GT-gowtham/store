@@ -1,122 +1,209 @@
 import React, { useState, useEffect } from 'react';
 import './offerproduct.css';
-import { Link } from 'react-router-dom';
+import { Link , useNavigate} from 'react-router-dom';
 import { useMediaQuery } from '@mui/material';
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import axios from 'axios';
+import Cookies from "js-cookie";
 
-function OfferProduct({ onAddToCart }) {
+function OfferProduct({ onUpdateCartItemCount }) {
   const [products, setProducts] = useState([]);
   const [wishlistProducts, setWishlistProducts] = useState([]);
-  const [message, setMessage] = useState('');
+  const [cartProducts, setCartProducts] = useState([]);
+  const [message, setMessage] = useState("");
   const isMobile = useMediaQuery("(max-width:600px)");
+  const navigate = useNavigate();
+  const [userId, setUserId] = useState("");
 
-  // Fetch all products
+  //const userId = 1; // Static user ID, change to dynamic if needed
   const getProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/product/products/', {
+      const response = await axios.get("http://localhost:8000/api/product/products/", {
         headers: {
-          'Content-Type': 'application/json',
-        }
+          "Content-Type": "application/json",
+        },
       });
-      const filteredProducts = response.data.filter(product => product.product_category === 'combo');
+      const filteredProducts = response.data.filter(
+        (product) => product.product_category === "combo"
+      );
       setProducts(filteredProducts);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     }
   };
 
-  // Fetch liked products from the wishlist when the component mounts
-  const getWishlist = async () => {
+  // Fetch wishlist products
+  const getWishlist = async (userId) => {
     try {
-      const response = await axios.get('http://localhost:8000/api/wishlist/Wishlist/', {
+      const response = await axios.get("http://localhost:8000/api/wishlist/Wishlist/", {
         headers: {
-          'Content-Type': 'application/json',
-        }
+          "Content-Type": "application/json",
+        },
       });
-      setWishlistProducts(response.data);  // Save the wishlist data (including wishlist IDs)
+      const filteredwishlist = response.data.filter(
+        (wishlist) => wishlist.wishlist_id == userId
+      );
+      setWishlistProducts(filteredwishlist);
     } catch (error) {
-      console.error('Error fetching wishlist:', error);
+      console.error("Error fetching wishlist:", error);
+    }
+  };
+
+  // Fetch cart products
+  const getCart = async (userId) => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/cart/", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const cartData = response.data.filter(
+        
+        (cart) => cart.cart_id == userId
+      );
+      
+      setCartProducts(cartData);
+      console.log(cartData)
+      if (cartData.length > 0) {
+        localStorage.setItem("cartCount", cartData.length);
+      } else {
+        localStorage.removeItem("cartCount");
+      }
+
+      onUpdateCartItemCount(cartData.length); // Update cart count
+    } catch (error) {
+      console.error("Error fetching cart:", error);
     }
   };
 
   useEffect(() => {
-    getProducts();
-    getWishlist();  // Fetch both products and wishlist when the component mounts
+    const sessionId = Cookies.get('sessionid');
+    const csrfToken = Cookies.get("csrftoken");
+  
+    if (sessionId) {
+      axios.post(
+        "http://localhost:8000/api/check-session/",
+        { session_id: sessionId },
+        {
+          headers: {
+            "X-CSRFToken": csrfToken,
+          },
+          withCredentials: true,
+        }
+      )
+        .then(async response => {
+          if (response.data.username) {
+           await setUserId(response.data.user_id);
+            console.log("response.data.user_id",response.data.user_id)
+            console.log("2")
+            getProducts();
+            getWishlist(response.data.user_id);
+            getCart(response.data.user_id); // Fetch both products and wishlist when the component mounts
+        
+            // Get the cart count from localStorage and update the state
+            const savedCartCount = localStorage.getItem("cartCount");
+            if (savedCartCount) {
+              onUpdateCartItemCount(parseInt(savedCartCount, 10));
+            }
+          }
+        })
+        .catch(error => {
+          console.error("Session verification error:", error);
+          setUserId(null);
+        });
+    }
+    else {
+      getProducts();
+    }
   }, []);
 
-  // Check if a product is in the wishlist (based on product ID)
+  // Check if a product is in the wishlist
   const isProductInWishlist = (productId) => {
-    return wishlistProducts.some(wishlistItem => wishlistItem.wishlist_product_id === productId);
+    return wishlistProducts.some(
+      (wishlistItem) => wishlistItem.wishlist_product_id === productId
+    );
   };
 
-  // Get the wishlist item ID based on the product ID (for deletion)
-  const getWishlistId = (productId) => {
-    const wishlistItem = wishlistProducts.find(wishlistItem => wishlistItem.wishlist_product_id === productId);
-    return wishlistItem ? wishlistItem.id : null;
+  // Check if a product is in the cart
+  const isProductInCart = (productId) => {
+    return cartProducts.some(
+      (cartItem) => cartItem.cart_product_id === productId
+    );
   };
 
-  // Handle like button click (add/remove from wishlist)
+  // Handle like button (add/remove from wishlist)
   const handleLikeClick = async (product) => {
     if (isProductInWishlist(product.id)) {
-      // If the product is already in the wishlist, remove it
-      const wishlistId = getWishlistId(product.id);
-      if (wishlistId) {
-        try {
-          await axios.delete(`http://localhost:8000/api/wishlist/Wishlist/${wishlistId}/`, {
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          });
-          console.log(`${product.product_name} removed from wishlist.`);
-          setWishlistProducts(wishlistProducts.filter(item => item.id !== wishlistId));  // Remove from the state
-        } catch (error) {
-          console.error('Error removing from wishlist:', error);
-        }
-      }
-    } else {
-      // If the product is not in the wishlist, add it
+      const wishlistItem = wishlistProducts.find(
+        (item) => item.wishlist_product_id === product.id
+      );
       try {
-        const response = await axios.post('http://localhost:8000/api/wishlist/Wishlist/', {
-          wishlist_id: 2,  // User ID
-          wishlist_product_id: product.id,  // Product ID
-        }, {
-          headers: {
-            'Content-Type': 'application/json',
+        await axios.delete(
+          `http://localhost:8000/api/wishlist/Wishlist/${wishlistItem.id}/`,
+          {
+            headers: { "Content-Type": "application/json" },
           }
-        });
-        console.log(`${product.product_name} added to the wishlist.`);
-        setWishlistProducts([...wishlistProducts, response.data]);  // Add the new wishlist item to the state
-      } catch (error) {
-        console.error('Error adding to wishlist:', error);
-      }
-    }
-  };
-
-  const handleBuyNow = (product) => {
-    if (product.product_qty > 0) {
-      setMessage(`You have successfully bought ${product.product_name}`);
-      // Proceed with buying logic
-    } else {
-      setMessage(`${product.product_name} is out of stock!`);
-    }
-  };
-
-  const handleAddToCart = (product) => {
-    if (product.product_qty > 0) {
-      if (!product.isAddedToCart) {
-        setMessage(`${product.product_name} has been added to your cart.`);
-        onAddToCart(product);
-        const updatedProducts = products.map(p =>
-          p.id === product.id ? { ...p, isAddedToCart: true } : p
         );
-        setProducts(updatedProducts);
-      } else {
-        setMessage(`${product.product_name} is already in your cart.`);
+        setWishlistProducts(
+          wishlistProducts.filter((item) => item.id !== wishlistItem.id)
+        );
+      } catch (error) {
+        console.error("Error removing from wishlist:", error);
       }
     } else {
-      setMessage(`${product.product_name} is out of stock!`);
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/api/wishlist/Wishlist/",
+          {
+            wishlist_id: userId,
+            wishlist_product_id: product.id,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        setWishlistProducts([...wishlistProducts, response.data]);
+      } catch (error) {
+        console.error("Error adding to wishlist:", error);
+      }
     }
+  };
+
+  // Handle Add to Cart click
+  const handleAddToCartClick = async (product) => {
+    if (product.product_stock < 1) {
+      setMessage(`${product.product_name} is out of stock!`);
+      return;
+    }
+
+    if (isProductInCart(product.id)) {
+      setMessage(`${product.product_name} is already in your cart.`);
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/cart/",
+        {
+          cart_id: userId,
+          cart_product_id: product.id,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      setMessage(`${product.product_name} added to the cart successfully!`);
+      getCart(); // Refresh the cart list
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
+
+
+  const handleProductClick = (product) => {
+    navigate("/viewProduct", { state: { product } });
+    console.log({ product });
   };
 
   return (
@@ -130,7 +217,8 @@ function OfferProduct({ onAddToCart }) {
             >
               {isProductInWishlist(product.id) ? '❤️' : '♡'}
             </div>
-            <img src={product.product_image} alt={product.product_name} className="product-image" />
+            <div onClick={() => handleProductClick(product)}>
+            <img src={product.product_image} alt={product.product_name} className="product-image" /> </div>
             <p className="product-name">
               <span style={{ fontWeight: "bold" }}>{product.product_name}</span>
             </p>
@@ -140,10 +228,13 @@ function OfferProduct({ onAddToCart }) {
               <span style={{ marginLeft: "10px", textDecoration: "line-through" }}>{product.docorprice}</span>
             </p>
             <div className="buttons">
-              <button className="buy-now" onClick={() => handleBuyNow(product)}>
-                <Link to="/address" style={{ color: "white" }}>Buy Now</Link>
+              <button
+                className="buy-now"
+                onClick={() => handleProductClick(product)}
+              >
+                View Product
               </button>
-              <button className="cart" onClick={() => handleAddToCart(product)}>Add Cart</button>
+              <button className="cart" onClick={() => handleAddToCartClick(product)}>Add Cart</button>
             </div>
           </div>
         ))}

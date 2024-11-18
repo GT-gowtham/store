@@ -155,11 +155,11 @@ EMAIL_PORT = 465
 EMAIL_USE_SSL = True  # Use SSL for port 465
 EMAIL_HOST_USER = 'gtgowtham6@gmail.com'
 EMAIL_HOST_PASSWORD = 'qbptysbjgszlgusl'
-DEFAULT_FROM_EMAIL = 'gtgowtham6@gmail.com' 
+DEFAULT_FROM_EMAIL = 'gtgowtham6@gmail.com'
 
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 
-SESSION_COOKIE_AGE = 1209600  # Two weeks
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
 SESSION_COOKIE_HTTPONLY = False 
 

@@ -1,9 +1,12 @@
 import { Breadcrumbs, Container, Grid, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { DividerCOlor, MainGrid } from "../styled/shippingStyle";
 
 const ShippingPolicy = () => {
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, []);
   return (
     <div>
       <Container>

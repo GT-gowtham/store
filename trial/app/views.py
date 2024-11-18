@@ -69,8 +69,20 @@ class OrderView(viewsets.ModelViewSet):
     queryset = Order .objects.all()
     serializer_class = OrderSerializer    
 
+# class OrderUpdateView(APIView):
+#     def put(self, request, pk):
+#         try:
+#             order = Order.objects.get(pk=pk)
+#             serializer = OrderSerializer(order, data=request.data, partial=True)  # Enable partial updates
+#             if serializer.is_valid():
+#                 serializer.save()
+#                 return Response(serializer.data, status=status.HTTP_200_OK)
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         except Order.DoesNotExist:
+#             return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)   
+
 class User_detailsView(viewsets.ModelViewSet):
-    queryset = User_details .objects.all()
+    queryset = User_details .objects.all()      
     serializer_class = User_detailsSerializer
 
 class WishlistView(viewsets.ModelViewSet):
