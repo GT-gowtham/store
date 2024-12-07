@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import Header from './components/header';
+import Header from './components/header/header';
 import Footer from './components/foot/foot';
 import CookieConsent from './components/cookies';
 import ShippingPolicy from './components/shippingPolicy';
@@ -26,6 +26,9 @@ import Otppage from './components/login/otp';
 import ViewProduct from './components/viewProduct';
 import AddAddress from "./components/address/addadress"
 import OrderSummary from './components/home/ordersummary';
+import SearchResults from './components/Searchresult/SearchResults';
+import ItProduct from './components/itProduct';
+import HrmsPage from "./components/hrmsHomePage/hrmsPage"
 
 const products = [
   {
@@ -131,6 +134,7 @@ function App() {
             />
           }
         />
+        <Route path="/search-results" element={<SearchResults onUpdateCartItemCount={updateCartItemCount}/>} />
         <Route path="/orderConfirm" element={<OrderSuccess />} />
         <Route path="/offerproduct" element={<OfferProduct  likedProducts={likedProducts}
               onAddToCart={handleAddToCart}
@@ -160,6 +164,7 @@ function App() {
               likedProducts={likedProducts}
               onAddToCart={handleAddToCart}
               onLikeToggle={handleLikeToggle}
+              onUpdateCartItemCount={updateCartItemCount}
             />
           }
         />
@@ -181,6 +186,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/otpp" element={<Otppage/>}/>
         <Route path="/newpassword" element={<NewPassword />} />
+        <Route path='/itProduct' element={<ItProduct/>} />
+        <Route path='/hrms' element={<HrmsPage/>} />
       </Routes>
 
       {!isUnderConstruction && (

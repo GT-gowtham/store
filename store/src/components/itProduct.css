@@ -1,0 +1,25 @@
+.slider-container {
+    width: 80%; /* Adjust width as needed */
+    margin: auto;
+    padding: 20px;
+    background-color: #f0f2f5; /* Light background color for the entire slider */
+    text-align: center;
+  }
+  
+  .slider-image-container {
+    background-color: #ffffff; /* White background for each card */
+    padding: 20px;
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 150px; /* Consistent height for each card */
+    margin: 10px; /* Space between cards */
+  }
+  
+  .slider-image {
+    max-width: 100%; /* Ensures image doesn't exceed container width */
+    max-height: 100%; /* Ensures image fits within container height */
+    object-fit: contain; /* Keeps aspect ratio while fitting in the container */
+  }

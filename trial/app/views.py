@@ -50,7 +50,7 @@ def login_view(request):
     else:
         # Debugging: Print the username and the password status
         print(f'Failed login attempt for username: {username}')
-        return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "Invalid username or password"}, status=status.HTTP_400_BAD_REQUEST)
         
 def check_email(request):
     email = request.query_params.get('email')
@@ -222,7 +222,7 @@ class CheckSessionView(APIView):
                 
                 if user_id:
                     user = User.objects.get(pk=user_id)
-                    return JsonResponse({"username": user.username,"name":user.first_name ,"user_id":user_id, "status": "active"}, status=status.HTTP_200_OK)
+                    return JsonResponse({"username": user.username,"name":user.first_name, "name2":user.last_name ,"user_id":user_id, "status": "active"}, status=status.HTTP_200_OK)
             except Session.DoesNotExist:
                 pass
         

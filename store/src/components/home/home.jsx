@@ -257,8 +257,6 @@ function Home({ onUpdateCartItemCount }) {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const handleCloseSnackbar = () => setOpenSnackbar(false);
 
-  //const userId = 1; // Static user ID, change to dynamic if needed
-  // Fetch products from the backend
   const getProducts = async () => {
     try {
       const response = await axios.get("http://localhost:8000/api/product/products/", {
@@ -344,10 +342,7 @@ function Home({ onUpdateCartItemCount }) {
             getCart(response.data.user_id); // Fetch both products and wishlist when the component mounts
         
             // Get the cart count from localStorage and update the state
-            const savedCartCount = localStorage.getItem("cartCount");
-            if (savedCartCount) {
-              onUpdateCartItemCount(parseInt(savedCartCount, 10));
-            }
+            cartnumber();
           }
         })
         .catch(error => {
@@ -360,6 +355,12 @@ function Home({ onUpdateCartItemCount }) {
     }
   }, []);
 
+  const cartnumber = () => {
+  const savedCartCount = localStorage.getItem("cartCount");
+  if (savedCartCount) {
+    onUpdateCartItemCount(parseInt(savedCartCount, 10));
+  }
+  }
   // Check if a product is in the wishlist
   const isProductInWishlist = (productId) => {
     return wishlistProducts.some(
@@ -418,6 +419,7 @@ function Home({ onUpdateCartItemCount }) {
       setMessage(`${product.product_name} is out of stock!`);
       setSnackbarColor("red");
       setOpenSnackbar(true);
+      cartnumber();
       return;
     }
 
@@ -451,8 +453,8 @@ function Home({ onUpdateCartItemCount }) {
 
 
   const handleProductClick = (product) => {
-    navigate("/viewProduct", { state: { product } });
-    console.log({ product });
+    navigate("/viewProduct", { state: { productid: product.id } });
+    console.log( "productid is", product.id );
   };
 
   return (

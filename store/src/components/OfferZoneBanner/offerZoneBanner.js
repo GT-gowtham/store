@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 
 const trendingOffers = [
-  { id: 1, title: "50% Off on Electronics", description: "Grab the best deals on the latest gadgets!", link: "/electronics" },
+  { id: 1, title: "50% Off on Electronics", description: "Grab the best deals on the latest gadgets!", link: "/offerproduct" },
   { id: 2, title: "Buy 1 Get 1 Free", description: "Fashionable apparel at unbeatable prices!", link: "/fashion" },
   { id: 3, title: " Discounts on HomeCare Products", description: "Upgrade your home with top deals!", link: "/home-appliances" },
   { id: 4, title: "Flash Sale: Limited Time Offers", description: "Exclusive discounts on top brands!", link: "/flash-sale" },

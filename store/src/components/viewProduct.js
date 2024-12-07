@@ -495,6 +495,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Similar from "./similar";
 
 const ViewProduct = ({ onUpdateCartItemCount }) => {
   const [message, setMessage] = useState("");
@@ -504,7 +505,8 @@ const ViewProduct = ({ onUpdateCartItemCount }) => {
   const isMobile = useMediaQuery("(max-width:600px)");
   const navigate = useNavigate();
   const location = useLocation();
-  const { product } = location.state;
+  const productid = location.state?.productid;
+  const [products, setProducts] = useState([]);
   const [cartProducts, setCartProducts] = useState([]);
   const [userDetails, setUserDetails] = useState([]);
   const [userId, setUserId] = useState("");
@@ -538,6 +540,7 @@ const ViewProduct = ({ onUpdateCartItemCount }) => {
                 getWishlist(response.data.user_id);
                 getCart(response.data.user_id);
                 getUser(response.data.user_id); 
+                getProducts(productid);
               }
             })
             .catch(error => {
@@ -545,7 +548,23 @@ const ViewProduct = ({ onUpdateCartItemCount }) => {
               setUserId(null);
             });
         }
-  }, []);
+        else{
+          getProducts(productid);
+        }
+  }, [productid, onUpdateCartItemCount]);
+
+  const getProducts = async (productid) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/product/products/${productid}/`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
 
   const getWishlist = async (userId) => {
     try {
@@ -606,7 +625,7 @@ const ViewProduct = ({ onUpdateCartItemCount }) => {
   };
 
   const handleIncrement = () => {
-    if (quantity < product.product_stock) {
+    if (quantity < products.product_stock) {
       setQuantity(quantity + 1);
       setError("");
     } else {
@@ -643,15 +662,15 @@ const ViewProduct = ({ onUpdateCartItemCount }) => {
   };
 
   const handleAddToCartClick = async () => {
-    if (product.product_stock < 1) {
-      setMessage(`${product.product_name} is out of stock!`);
+    if (products.product_stock < 1) {
+      setMessage(`${products.product_name} is out of stock!`);
       setSnackbarColor("red");
       setOpenSnackbar(true);
       return;
     }
 
-    if (isProductInCart(product.id)) {
-      setMessage(`${product.product_name} is already in your cart.`);
+    if (isProductInCart(products.id)) {
+      setMessage(`${products.product_name} is already in your cart.`);
       setSnackbarColor("red");
       setOpenSnackbar(true);
       return;
@@ -660,13 +679,13 @@ const ViewProduct = ({ onUpdateCartItemCount }) => {
     try {
       await axios.post("http://localhost:8000/api/cart/", {
         cart_id: userId,
-        cart_product_id: product.id,
+        cart_product_id: products.id,
         quantity: quantity,
-        product: product.product_name,
-        price: product.product_price,
+        product: products.product_name,
+        price: products.product_price,
       });
 
-      setMessage(`${product.product_name} added to the cart successfully!`);
+      setMessage(`${products.product_name} added to the cart successfully!`);
       setSnackbarColor("green");
       setOpenSnackbar(true);
       getCart();
@@ -685,7 +704,7 @@ const ViewProduct = ({ onUpdateCartItemCount }) => {
       console.error("Error fetching user:", error);
     }
   };
-  const handleBuyNowClick = () => {
+  const handleBuyNowClick = (product) => {
     console.log(product.product_stock);
     if(product.product_stock >= quantity){ 
       console.log(userDetails.length)
@@ -715,44 +734,40 @@ const ViewProduct = ({ onUpdateCartItemCount }) => {
 
 
   return (
+    <div>
     <Box sx={{ padding: { xs: 2, md: 4 }, marginTop: 4 }}>
       <Grid container spacing={4}>
-        <Grid
-          item
-          xs={12}
-          md={6}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <div style={{ border: "2px solid #550a35", borderRadius: "8px" }}>
-            <div
-              className="favorite-button"
-              onClick={() => handleLikeClick(product)}
-              style={{
-                color: isProductInWishlist(product.id) ? "red" : "black",
-                border: "none",
-                background: "none",
-              }}
-            >
-              {isProductInWishlist(product.id) ? "❤" : "♡"}
-            </div>
-            <img
-              src={product.product_image}
-              alt={product.product_name}
-              style={{ width: "100%", maxWidth: "500px", objectFit: "cover" }}
-            />
-          </div>
-        </Grid>
+      <Grid item xs={12} md={6} display="flex" justifyContent="center" alignItems="center">
+  {products && (
+    <div style={{ border: "2px solid #550a35", borderRadius: "8px" }}>
+      <div
+        className="favorite-button"
+        onClick={() => handleLikeClick(products)}
+        style={{
+          color: isProductInWishlist(products.id) ? "red" : "black",
+          border: "none",
+          background: "none",
+        }}
+      >
+        {isProductInWishlist(products.id) ? "❤" : "♡"}
+      </div>
+      <img
+        src={products.product_image}
+        alt={products.product_name}
+        style={{ width: "100%", maxWidth: "500px", objectFit: "cover" }}
+      />
+    </div>
+  )}
+</Grid>
         <Grid item xs={12} md={6} display="flex" flexDirection="column">
           <Typography variant="h4" gutterBottom style={{ color: "#550a35" }}>
-            {product.product_name}
+            {products.product_name}
           </Typography>
           <Typography variant="h6" style={{ color: "#550a35" }} gutterBottom>
-            Price: ₹{product.product_price * quantity}
+            Price: ₹{products.product_price * quantity}
           </Typography>
           <Typography variant="body1" paragraph style={{ color: "#550a35" }}>
-            {product.product_description}
+            {products.product_description}
           </Typography>
           <Grid container alignItems="center">
             <Grid item lg={1}>
@@ -827,6 +842,11 @@ const ViewProduct = ({ onUpdateCartItemCount }) => {
         }}
       />
     </Box>
+    <Similar
+    currentProductId={products.id}
+    currentProductCategory={products.product_category}
+    />
+    </div>
   );
 };
 

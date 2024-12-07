@@ -129,7 +129,7 @@ function Login() {
               </Typography>
               <TextField
                 fullWidth
-                label="Username"
+                label="Email ID"
                 variant="outlined"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}

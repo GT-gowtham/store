@@ -202,8 +202,8 @@ function OfferProduct({ onUpdateCartItemCount }) {
 
 
   const handleProductClick = (product) => {
-    navigate("/viewProduct", { state: { product } });
-    console.log({ product });
+    navigate("/viewProduct", { state: { productid: product.id } });
+    console.log("productid is :", product.id);
   };
 
   return (
@@ -221,6 +221,8 @@ function OfferProduct({ onUpdateCartItemCount }) {
             <img src={product.product_image} alt={product.product_name} className="product-image" /> </div>
             <p className="product-name">
               <span style={{ fontWeight: "bold" }}>{product.product_name}</span>
+              {" "}
+              {product.product_qty}
             </p>
             <p className="product-price">
               <CurrencyRupeeIcon style={{ paddingTop: "-10px", fontSize: "15px" }} />

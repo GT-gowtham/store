@@ -84,9 +84,9 @@ SESSION_COOKIE_AGE =  2592000 #30 days
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'products',                    # Your database name
+        'NAME': 'store',                     # Your database name
         'USER': 'root',                      # Default MySQL user in XAMPP
-        'PASSWORD': '',                  # Default password (usually empty)
+        'PASSWORD': '',                      # Default password (usually empty)
         'HOST': '127.0.0.1',                 # Localhost
         'PORT': '3306',                      # Default MySQL port
     }
@@ -100,9 +100,11 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    'http://localhost:3001',
 ]
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
+    'http://localhost:3001',
 ]
 
 # Password validation
