@@ -699,14 +699,18 @@ const ViewProduct = ({ onUpdateCartItemCount }) => {
       const response = await axios.get(
         "http://localhost:8000/api/User_details/"
       );
-      setUserDetails(response.data);
+      if (response.data) {
+        const filtereduser = response.data.filter(
+          (address) => address.user_ID == userId
+        );
+        setUserDetails(filtereduser);}
     } catch (error) {
       console.error("Error fetching user:", error);
     }
   };
   const handleBuyNowClick = (product) => {
-    console.log(product.product_stock);
-    if(product.product_stock >= quantity){ 
+    console.log(products.product_stock);
+    if(products.product_stock >= quantity){ 
       console.log(userDetails.length)
     if (userDetails.length > 0) {
       navigate("/addAddress", {
@@ -714,7 +718,7 @@ const ViewProduct = ({ onUpdateCartItemCount }) => {
           user: userId,
           product: product.id,
           quantity,
-          price: product.product_price * quantity,
+          price: products.product_price * quantity,
         },
       });
     } else {

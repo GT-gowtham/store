@@ -10,6 +10,7 @@ function SearchResults ({onUpdateCartItemCount}) {
   const location = useLocation();
   const query = new URLSearchParams(location.search).get("query");
   // const [results, setResults] = useState([]);
+  const [groupedProducts, setGroupedProducts] = useState({});
   const isMobile = useMediaQuery("(max-width:600px)");
   const [products, setProducts] = useState([]);
   const [snackbarColor, setSnackbarColor] = useState("green"); // Default color
@@ -22,7 +23,8 @@ function SearchResults ({onUpdateCartItemCount}) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getProducts();
+    getProducts(query);
+    fetchProductsByCategory();
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     const sessionId = Cookies.get('sessionid');
     const csrfToken = Cookies.get("csrftoken");
@@ -55,13 +57,31 @@ function SearchResults ({onUpdateCartItemCount}) {
           setUserId(null);
         });
     }
-  }, []);
+  }, [query]);
 
+  const fetchProductsByCategory = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/product/products/");
+      const productsData = response.data;
 
-    const getProducts = async () => {
+      // Group products by category
+      const grouped = productsData.reduce((acc, product) => {
+        const category = product.product_category || "Uncategorized";
+        if (!acc[category]) acc[category] = [];
+        acc[category].push(product);
+        return acc;
+      }, {});
+
+      setGroupedProducts(grouped);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+    const getProducts = async (query) => {
       const response = await fetch(`http://localhost:8000/api/search/?query=${query}`);
       const data = await response.json();
       setProducts(data);
+      console.log(data);
     };
 
     const getWishlist = async (userId) => {
@@ -199,36 +219,38 @@ function SearchResults ({onUpdateCartItemCount}) {
       console.log( "productid is", product.id );
     };
 
-    const filterbycategory = async (category) => {
-      try {
-        navigate(`?query=${category}`);
-        const response = await axios.get("http://localhost:8000/api/product/products/", {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const filteredProducts = response.data.filter(
-          (product) => product.product_category === category
-        );
-        setProducts(filteredProducts);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
+    const filterbycategory = (category) => {
+        navigate(`/category/${category}`); // Navigate to search results page
+        // window.location.reload();
     };
 
   return (
-    <div
+    <div><h1>Search Results for "{query}"</h1>
+    <div className="product-gridd2"
     style={{
       marginLeft: isMobile ? "" : "10vh",
       marginRight: isMobile ? "" : "10vh",
       marginTop: "5vh",
     }}
-  ><h1>Search Results for "{query}"</h1>
-    <div className="product-list">
+  >
+ <div className="category-links2">
+ <h1>Explore Categories</h1>
+ {Object.keys(groupedProducts).map((categoryName) => (
+   <a    
+     href={`#${categoryName}`}
+     key={categoryName} 
+     className="category-link-button2"
+     onClick={() => filterbycategory(categoryName)}
+   >
+     {categoryName}<br></br>
+   </a>
+ ))}
+ </div>
+    <div className="product-list2">
       {products.map((product) => (
-        <div key={product.id} className="product-item">
+        <div key={product.id} className="product-item2">
           <div
-            className="favorite-button"
+            className="favorite-button2"
             onClick={() => handleLikeClick(product)}
             style={{
               color: isProductInWishlist(product.id) ? "red" : "black",
@@ -242,10 +264,10 @@ function SearchResults ({onUpdateCartItemCount}) {
             <img
               src={product.product_image}
               alt={product.product_name}
-              className="product-image"
+              className="product-image2"
             />
           </div>
-          <p className="product-name">
+          <p className="product-name2">
             <span style={{ fontWeight: "bold" }}>{product.product_name}</span>
             <span
               style={{
@@ -260,7 +282,7 @@ function SearchResults ({onUpdateCartItemCount}) {
           </p>
           <a 
             href="#" 
-            className="product-category-link" 
+            className="product-category-link2" 
             onClick={(e) => {
               e.preventDefault(); // Prevent default link behavior
               filterbycategory(product.product_category);
@@ -268,7 +290,7 @@ function SearchResults ({onUpdateCartItemCount}) {
           >
             {product.product_category} Category
           </a>
-          <p className="product-price">
+          <p className="product-price2">
             <CurrencyRupeeIcon
               style={{ paddingTop: "-10px", fontSize: "15px" }}
             />
@@ -279,16 +301,16 @@ function SearchResults ({onUpdateCartItemCount}) {
               {product.docorprice}
             </span>
           </p>
-          <div className="buttons">
+          <div className="buttons2">
             <button
-              className="buy-now"
+              className="buy-now2"
               onClick={() => handleProductClick(product)}
             >
               View Product
             </button>
 
             <button
-              className="cart"
+              className="cart2"
               onClick={() => handleAddToCartClick(product)}
             >
               Add Cart
@@ -308,8 +330,9 @@ function SearchResults ({onUpdateCartItemCount}) {
         },
       }}
       />
-    </div>
   </div>
+ </div> 
+</div>
 );
 }
 

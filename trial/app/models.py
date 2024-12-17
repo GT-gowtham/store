@@ -117,3 +117,32 @@ class PendingUser(models.Model):
     otp = models.CharField(max_length=6)
     is_verified = models.BooleanField(default=False)
     otp_expiration = models.DateTimeField(default=timezone.now() + timezone.timedelta(minutes=5))
+
+class Registration(models.Model):
+    # Personal Information
+    full_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    age = models.IntegerField()
+    phone_no = models.CharField(max_length=15)
+    dob = models.DateField()
+    gender = models.CharField(max_length=10)
+
+    # Address
+    permanent_address = models.TextField()
+    residential_address = models.TextField()
+
+    # Academic History
+    school_college = models.CharField(max_length=100)
+    qualification = models.CharField(max_length=100)
+    year_of_passing = models.IntegerField()
+
+    # Course Details
+    joined_course = models.CharField(max_length=100)
+    joining_date = models.DateField()
+    course_timing = models.CharField(max_length=100)
+    online_offline = models.CharField(max_length=10)
+    # fees_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    # mentor_name = models.CharField(max_length=100)
+
+    def _str_(self):
+        return self.full_name 

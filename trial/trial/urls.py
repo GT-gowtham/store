@@ -6,9 +6,13 @@ from app.views import UserView
 from app import views
 
 
-from app.views import ProductView, CartView, OrderView, User_detailsView, PaymentView, WishlistView, ContactView, CheckSessionView, UserView, OTPView, CheckEmailView, login_view, logout_view 
+from app.views import ProductView, CartView, OrderView, User_detailsView, PaymentView, WishlistView, ContactView, CheckSessionView, UserView, OTPView, RegistrationViewSet, CheckEmailView, login_view, logout_view 
 
 from rest_framework import routers
+from rest_framework.routers import DefaultRouter
+
+router =DefaultRouter()
+router.register("registration", RegistrationViewSet)
 
 # Define different routes for each viewset
 user_router = routers.DefaultRouter()
@@ -47,7 +51,8 @@ urlpatterns = [
     path("api/logout/", logout_view, name="logout"),
     path('api/check-session/', CheckSessionView.as_view(), name='check_session'),
     path('api/product/', include(product_router.urls)),  # Route for products  
-    path('api/search/', views.search_products, name='search_products'),  
+    path('api/search/', views.search_products, name='search_products'), 
+    path('api/search_category/', views.search_category, name='search_category'), 
     path('api/', include(cart_router.urls)),     # Route for cart
     path('api/order/', include(Order_router.urls)),     # Route for cart
     path('api/', include(User_details_router.urls)),     # Route for cart
@@ -56,6 +61,7 @@ urlpatterns = [
     path('api/', include(Contact_router.urls)),     # Route for cart
     path('api/', include(otp_router.urls)),
     path('api/verify-otp/', OTPView.as_view({'post': 'verify'}), name='verify-otp'),
-     path('api/check-email/', CheckEmailView.as_view(), name='check_email'),
+    path('api/check-email/', CheckEmailView.as_view(), name='check_email'),
+    path('api/registration/', include(router.urls)),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) +  static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

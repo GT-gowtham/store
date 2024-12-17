@@ -1,0 +1,871 @@
+/* Offer Zone Styles */
+.offer-zone {
+    padding: 20px;
+    background-color: #f7f7f7;
+    position: relative;
+    overflow: hidden;
+    height: 500px; /* Set offer zone height */
+  }
+  
+  .offer-slider {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%; /* Ensure it fills the offer zone */
+  }
+  
+  .offer-wrapper {
+    display: flex;
+    gap: 20px; /* Add consistent 5px gap between cards */
+    animation: scroll 20s linear infinite; /* Smooth infinite scrolling */
+  }
+  
+  .offer-card {
+    flex: 0 0 25%; /* Slightly smaller cards (adjust width as needed) */
+    text-align: center;
+    background-color: white;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .offer-card img {
+    width: 90%; /* Fully responsive image */
+    height: 400px; /* Adjust image height */
+    object-fit: cover; /* Maintain image aspect ratio */
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+  }
+  
+  .offer-card:hover {
+    transform: translateY(-5px); /* Lift card on hover */
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2); /* Add hover shadow */
+  }
+  
+  .offer-card:hover img {
+    transform: scale(1.05); /* Zoom image slightly on hover */
+  }
+  
+  .offer-card p {
+    margin-top: 10px;
+    font-size: 10px;
+    font-weight: 500;
+    color: BLACK;
+  }
+  
+  /* Continuous Scrolling Animation */
+  @keyframes scroll {
+    0% {
+      transform: translateX(0); /* Start at the beginning */
+    }
+    100% {
+      transform: translateX(-190%); /* Scroll completely out of view */
+    }
+  }
+  
+  
+  /* Arrow Buttons */
+  .arrow {
+    font-size: 24px;
+    background-color: rgba(85, 10, 53, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+  }
+  
+  .left-arrow {
+    left: 10px;
+  }
+  
+  .right-arrow {
+    right: 10px;
+  }
+  
+  .arrow:hover {
+    background-color: rgba(85, 10, 53, 1);
+  }
+  
+  /* Sliding animation */
+  @keyframes slide {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+  
+  
+  
+  .home-page {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .winter-essentials1 {
+    width: 40%;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  .winter-essentials1 h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .essentials-grid1 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  
+  .essential-item1 {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    padding: 10px;
+  }
+  
+  .essential-item1 img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 8px;
+  }
+  
+  .essential-info1 p {
+    margin: 0;
+    font-size: 14px;
+  }
+  
+  .green-text {
+    color: green;
+  }
+  
+  .top-selling-smartphones1 {
+    width: 60%;
+    background-color: #f2f2f2;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+  
+  
+  .top-selling-smartphones1 h2 {
+    font-size: 24px;
+    margin: 0;
+  }
+  
+  .top-selling-smartphones1 p {
+    font-size: 16px;
+    color: #888;
+    margin-top: 8px;
+  }
+  
+  .explore-button1 {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #ff9900;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  
+  
+  
+  /* Navbar Styles */
+  /* Navigation Section */
+  .navbar {
+    display: flex;
+    justify-content: space-around;
+    padding: 16px 0;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .nav-item {
+    position: relative;
+    padding: 8px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .icon {
+    margin-right: 8px;
+    font-size: 20px;
+  }
+  
+  .arrow1 {
+    margin-left: 8px;
+    font-size: 14px;
+  }
+  
+  /* Dropdown Styles */
+  .dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    width: 200px;
+    border-radius: 4px;
+    display: none; /* Hidden by default */
+    z-index: 10;
+  }
+  
+  .nav-item:hover .dropdown {
+    display: block; /* Show dropdown on hover */
+  }
+  
+  .dropdown-item {
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+  }
+  
+  .dropdown-item:hover {
+    background-color: #f5f5f5;
+  }
+  
+  
+  
+  
+  /* Banner Styles */
+  .banner {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  
+  .slide {
+    min-width: 100%;
+    height: 400px;
+    background-size: cover;
+    background-position: center;
+    display: none;
+    transition: opacity 0.5s ease-in-out;
+  }
+  
+  .slide.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+  }
+  
+  .banner-content {
+    text-align: center;
+    color: white;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    border-radius: 8px;
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  .banner-content h1 {
+    font-size: 2rem;
+    margin: 0.5rem 0;
+  }
+  
+  .banner-content p {
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+  }
+  
+  .shop-now-btn {
+    background-color: #550a35;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .shop-now-btn:hover {
+    background-color: #7a0e4a;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  
+  .product-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+    background-color: #ddd;
+  }
+  
+  .product-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 200px;
+    text-align: center;
+    overflow: hidden;
+    background: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .product-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .product-info {
+    padding: 10px;
+  }
+  
+  .product-title {
+    font-size: 1.1em;
+    margin: 5px 0;
+  }
+  
+  .product-discount {
+    color: #d32f2f;
+    font-weight: bold;
+    margin: 5px 0;
+  }
+  
+  .shop-now-button {
+    background-color: #550a35;
+    color: #fff;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+  
+  
+  
+  
+  
+  /* General Styles */
+  .categories-sectionj {
+    padding: 20px;
+    background-color: #ddd;
+  }
+  
+  /* Category Header */
+  .category-headerj {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .category-headerj h2 {
+    font-size: 20px;
+    color: #333;
+  }
+  
+  .see-morej {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #007bff;
+    cursor: pointer;
+  }
+  
+  /* Grid Layout */
+  .category-gridj {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 items in a row */
+    gap: 16px;
+  }
+  
+  .product-cardj {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    padding: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .product-cardj img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  
+  .product-namej {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  .product-offerj {
+    font-size: 12px;
+    color: #28a745;
+    font-weight: bold;
+  }
+  
+  /* Hover Effect */
+  .product-cardj:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  
+  
+  
+  /* Ad Banner */
+  .ad-bannerj {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #e3f2fd;
+  
+    border-radius: 8px;
+    height: 500px; /* Adjust height as needed */
+  }
+  
+  .ad-contentj {
+    width: 40%; /* Set content to half the width */
+    height: 100%; /* Occupy full height of the container */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .ad-contentj h2 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .ad-contentj p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 15px;
+  }
+  
+  .explore-buttonj {
+    /* background-color: #550a35; */
+    background-color: #033355;
+    color: #fff;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 30px;
+  }
+  
+  .explore-buttonj:hover {
+    background-color: #0056b3;
+  }
+  
+  .ad-imagej {
+    width: 80%; /* Set image to half the width */
+    height: 100%; /* Occupy full height of the container */
+    object-fit: cover; /* Ensure the image covers the container without distortion */
+    border-radius: 8px;
+  }
+  
+  
+  
+  /* Slider.css */
+  .slider {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 600px;
+    height: 300px;
+    margin: auto;
+  }
+  
+  .slide-content {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+  }
+  
+  .slides {
+    display: flex;
+  }
+  
+  .slide {
+    min-width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 24px;
+    z-index: 1;
+  }
+  
+  .arrow.left {
+    left: 10px;
+  }
+  
+  .arrow.right {
+    right: 10px;
+  }
+  
+  .recommendationsbt {
+    border: 1px solid #ddd;
+    padding: 20px;
+    text-align: center;
+    max-width: 1900px;
+    margin: 0 auto;
+    
+    border-radius: 50px;
+    background-color: #fff;
+  }
+  
+  .recommendationsbt h2 {
+    font-size: 35px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  
+    color: #111;
+  }
+  
+  .sign-in-buttonbt {
+    background-color: #f0c14b;
+    color: #111;
+    font-size: 20px;
+    padding: 8px 150px;
+    border: 1px solid #a88734;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  
+  .sign-in-buttonbt:hover {
+    background-color: #e2ae3d;
+  }
+  
+  .new-customerbt {
+    font-size: 18px;
+    color: #555;
+  }
+  
+  .new-customerbt a {
+    color: #0066c0;
+    text-decoration: none;
+  }
+  
+  .new-customerbt a:hover {
+    text-decoration: underline;
+  }
+  
+  
+  
+  
+  
+  .hero-slider {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    aspect-ratio: 16 / 9; /* Set an aspect ratio */
+    max-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    border-radius: 15px;
+  }
+  
+  
+  
+  .slide {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 100%;
+    height: 100%;
+    background-size: contain; /* Changed from cover to contain */
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    opacity: 0;
+    z-index: 0;
+    transition: opacity 0.5s, transform 0.5s;
+  }
+  
+  .active {
+    left: 0;
+    opacity: 1;
+    z-index: 1;
+  }
+  
+  .prev {
+    left: -100%;
+  }
+  
+  
+  .slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensures the full image is visible without cropping */
+    border-radius: 15px;
+  }
+  
+  @media (max-width: 768px) {
+    .hero-slider {
+      height: 30vh; /* Smaller height on mobile */
+      aspect-ratio: 4 / 3; /* Adjust aspect ratio for mobile */
+    }
+  }
+  
+  
+  /* CallButton.css */
+  .call-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: white; /* Use your preferred color */
+    color: white;
+    font-size: 24px;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1000; /* Keeps it on top of other elements */
+    transition: transform 0.3s;
+  }
+  
+  .call-button:hover {
+    transform: scale(1.1);
+  }
+  
+  
+  
+  
+  /* slide */
+  .c-carousel {
+    position: relative;
+    width: 100%;
+    height: 490px;
+    margin: 20px auto;
+    overflow: hidden;
+    border-radius: 10px;
+  }
+  
+  .c-slide {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px;
+    color: white;
+    height: 100%;
+   
+  }
+  
+  .c-content {
+    max-width: 50%;
+   
+  }
+  
+  .c-content h1 {
+    font-size: 50px;
+    margin-bottom: 10px;
+  }
+  
+  .c-content p {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .c-buttons {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .c-btn {
+    padding: 10px 20px;
+    border: none;
+    background-color: white;
+    color: black;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .c-btn:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+  .c-image {
+    max-width: 60%;
+    height: auto;
+  }
+  
+  .c-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+  
+  
+  
+  .c-indicators {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .c-indicator {
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    border-radius: 10%;
+    cursor: pointer;
+    align-items: center;
+  
+  }
+  
+  .c-indicator.active {
+    background-color: #550a35; /* Professional color touch */
+  }
+  
+  
+  
+  /* CardGrid.css */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 cards per row */
+    gap: 80px;
+    padding: 20px;
+    background-color: white;
+    
+    margin: 50px 50px; /* Shorthand for margin-top, margin-right, margin-bottom, margin-left */
+  }
+  
+  .card {
+    position: relative;
+    overflow: hidden;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 80%; /* Full width within the grid layout */
+    height: 100%;
+  }
+  
+  .card-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60%;
+    padding: 1px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #3E2723;
+    /* background: #4A5A31; */
+    background: white;
+     /* Semi-transparent background */
+    text-align: center;
+    z-index: 1;
+    height: 6%; /* Covers half of the image */
+    display: flex;
+    align-items: center; /* Center text vertically */
+    justify-content: center; /* Center text horizontally */
+    /* Rounded corners on the top */
+  }
+  
+  .card-image {
+    display: block;
+    width: 100%; /* Set image to fill the card width */
+    height: 300px; /* Fixed height for consistency across cards */
+    object-fit: cover; /* Maintain aspect ratio and cover entire area */
+    border-radius: 8px; /* Rounded corners for the entire image */
+  }
+  .card-sectionh {
+    text-align: center; /* Center aligns heading and grid */
+    padding: 20px;
+  }
+  
+  .card-heading {
+    font-size: 2.5rem; /* Large font size for impact */
+    font-weight: bold;
+    color: #550a35; /* Preferred color */
+    margin-bottom: 20px; /* Spacing between heading and cards */
+    text-transform: uppercase; /* Makes text all uppercase */
+    letter-spacing: 2px; /* Adds spacing between letters */
+    position: relative;
+  }
+  .card-button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #550a35; /* Preferred color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .card-button:hover {
+    background-color: #e8d2de; /* Darker shade for hover effect */
+  }

@@ -29,6 +29,11 @@ import OrderSummary from './components/home/ordersummary';
 import SearchResults from './components/Searchresult/SearchResults';
 import ItProduct from './components/itProduct';
 import HrmsPage from "./components/hrmsHomePage/hrmsPage"
+import Productcategory from './components/category/Productcategory';
+import Overhomepage from './components/home/overhomepage';
+import Automation from './components/home/automation';
+import Academy from './components/home/Academyhome';
+import Registration  from './components/home/registrationForm';
 
 const products = [
   {
@@ -123,6 +128,7 @@ function App() {
         <Route path="/address" element={<Address />} />
         <Route path="/addaddress" element={<AddAddress />} />
         <Route path="/ordersummary" element={<OrderSummary />} />
+        <Route path='/registrationForm' element={<Registration />} />
         <Route
           path="/viewProduct"
           element={
@@ -134,6 +140,7 @@ function App() {
             />
           }
         />
+        <Route path="/category/:category" element={<Productcategory onUpdateCartItemCount={updateCartItemCount} />} />
         <Route path="/search-results" element={<SearchResults onUpdateCartItemCount={updateCartItemCount}/>} />
         <Route path="/orderConfirm" element={<OrderSuccess />} />
         <Route path="/offerproduct" element={<OfferProduct  likedProducts={likedProducts}
@@ -169,9 +176,48 @@ function App() {
           }
         />
         <Route
-          path="/"
+          path="/fmcg"
           element={
             <Home
+              onAddToCart={handleAddToCart}
+              onProductLiked={handleProductLiked}
+              products={products}
+              likedProducts={likedProducts.map((p) => p.id)}
+              onLikeToggle={handleLikeToggle}
+              onUpdateCartItemCount={updateCartItemCount}
+            />
+          }
+        />
+        <Route
+          path="/automation"
+          element={
+            <Automation
+              onAddToCart={handleAddToCart}
+              onProductLiked={handleProductLiked}
+              products={products}
+              likedProducts={likedProducts.map((p) => p.id)}
+              onLikeToggle={handleLikeToggle}
+              onUpdateCartItemCount={updateCartItemCount}
+            />
+          }
+        />
+         <Route
+          path="/academy"
+          element={
+            <Academy
+              onAddToCart={handleAddToCart}
+              onProductLiked={handleProductLiked}
+              products={products}
+              likedProducts={likedProducts.map((p) => p.id)}
+              onLikeToggle={handleLikeToggle}
+              onUpdateCartItemCount={updateCartItemCount}
+            />
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <Overhomepage
               onAddToCart={handleAddToCart}
               onProductLiked={handleProductLiked}
               products={products}

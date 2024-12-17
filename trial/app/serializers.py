@@ -1,6 +1,11 @@
 from rest_framework import serializers
-from .models import Product, AddToCart, Order, User_details, Payment, Wishlist, Contact, PendingUser
+from .models import Product, AddToCart, Order, User_details, Payment, Wishlist, Contact, PendingUser, Registration
 from django.contrib.auth.models import User
+
+class RegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Registration
+        fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

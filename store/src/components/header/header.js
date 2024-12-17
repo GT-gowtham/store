@@ -545,7 +545,8 @@ const Header = ({ cartItemCount, likedProducts }) => {
     if (e.key === "Enter" && searchTerm.trim() !== "") {
       navigate(`/search-results?query=${searchTerm}`); // Navigate to search results page
       setSearchResults([]);
-      window.location.reload();
+      setSearchTerm("");
+      // window.location.reload();
     }
   };
   return (
@@ -667,10 +668,10 @@ const Header = ({ cartItemCount, likedProducts }) => {
             {showITProductsDropdown && (
               <div className="dropdown-menu">
                 <Link to="/itProduct">ITPRODUCT</Link>
-                <Link to="/">AUTOMATION</Link>
-                <Link to="/">FMCG</Link>
+                <Link to="/automation">AUTOMATION</Link>
+                <Link to="/fmcg">FMCG</Link>
                 <Link to="/hrms ">HRMS</Link>
-                <Link to="/">ACADEMYCOURSES</Link>
+                <Link to="/academy">ACADEMYCOURSES</Link>
               </div>
             )}
           </div>

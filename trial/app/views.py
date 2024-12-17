@@ -20,8 +20,49 @@ from django.utils.decorators import method_decorator
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import logout
 from django.db.models import Q
+from rest_framework.status import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
+from rest_framework.viewsets import ModelViewSet
+from .models import Registration
+from .serializers import RegistrationSerializer
 
+class RegistrationViewSet(ModelViewSet):
+    queryset = Registration.objects.all()
+    serializer_class = RegistrationSerializer
+    
+    def create(self, request, *args, **kwargs):
+        try:
+            # Default create method to save candidate data
+            response = super().create(request, *args, **kwargs)
 
+            # Candidate data from request
+            candidate_name = request.data.get('full_name')
+            candidate_email = request.data.get('email')
+            joined_course = request.data.get('joined_course')
+
+            # Sending confirmation mail to candidate
+            send_mail(
+                subject='Registration Successful',
+                message=f"Hi {candidate_name},\n\nThank you for registering for the course '{joined_course}'. We will contact you soon for further details.\n\nRegards,\nGowtham",
+                from_email='gtgowtham6@gmail.com',
+                recipient_list=[candidate_email],
+                fail_silently=False,
+            )
+
+            # Sending notification mail to admin (Gowtham)
+            send_mail(
+                subject='New Candidate Registered',
+                message=f"New candidate registered:\n\nName: {candidate_name}\nEmail: {candidate_email}\nCourse: {joined_course}",
+                from_email='gtgowtham6@gmail.com',
+                recipient_list=['gtgowtham6@gmail.com'],
+                fail_silently=False,
+            )
+
+            return Response({"message": "Candidate registered and emails sent successfully"}, status=HTTP_201_CREATED)
+
+        except Exception as e:
+            # Handle errors
+            return Response({"error": f"Error processing registration: {str(e)}"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+        
 # Create your views here.
 class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -240,6 +281,17 @@ def search_products(request):
     if query:
         # Filter products based on the product name containing the query
         products = Product.objects.filter(product_name__icontains=query)
+        # Serialize the data with context to get the full URL
+        serializer = ProductSerializer(products, many=True, context={'request': request})
+        return Response(serializer.data)
+    return Response([])
+
+@api_view(['GET'])
+def search_category(request):
+    query = request.GET.get('category', '')
+    if query:
+        # Filter products based on the product name containing the query
+        products = Product.objects.filter(product_category__icontains=query)
         # Serialize the data with context to get the full URL
         serializer = ProductSerializer(products, many=True, context={'request': request})
         return Response(serializer.data)

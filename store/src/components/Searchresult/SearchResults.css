@@ -1,73 +1,158 @@
-/* Search Results Container */
-.search-results-container {
-    padding: 20px;
-  }
-  
-  .search-results-container h1 {
-    text-align: left;
-    margin-bottom: 20px;
-  }
-  
-  /* Product Grid */
-  .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 20px;
-  }
-  
-  /* Product Card */
-  .product-card {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  /* Product Image */
-  .product-image img {
-    width: 100%;
-    height: 150px;
-    object-fit: contain;
-    padding: 10px;
-    background-color: #f9f9f9;
-  }
-  
-  /* Product Details */
-  .product-details {
-    padding: 10px 15px;
-  }
-  
-  .product-category-link {
-    color: #007bff; /* Link color */
-    text-decoration: underline; /* Underline for link */
-    cursor: pointer; /* Pointer cursor */
-  }
-  
-  .product-category-link:hover {
-    text-decoration: none; /* Remove underline on hover */
-    color: #0056b3; /* Darker color on hover */
+/* General grid layout for products and categories */
+.product-gridd2 {
+  display: grid;
+  grid-template-columns: 1fr 4fr; /* First column for categories, remaining 4 for products */
+  gap: 24px;
+  padding: 16px;
+}
+
+/* Category links container */
+.category-links2 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-height: 80vh; /* Scroll if content overflows */
+  overflow-y: auto;
+}
+
+.category-link-button2 {
+  background-color: #944572;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 16px;
+  text-align: left;
+  transition: background-color 0.3s ease;
+}
+
+.category-link-button2:hover {
+  background-color: #e63946;
+}
+
+/* Product grid */
+.product-list2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Flexible grid for products */
+  gap: 16px;
+}
+
+/* Individual product card */
+.product-item2 {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  text-align: center;
+  position: relative;
+  padding: 16px;
+  transition: transform 0.3s ease;
+}
+
+.product-item2:hover {
+  transform: scale(1.05);
+}
+
+/* Favorite (like) button */
+.favorite-button2 {
+  cursor: pointer;
+  font-size: 24px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  transition: color 0.3s ease;
+}
+
+.favorite-button2:hover {
+  color: #e63946;
+}
+
+/* Product image */
+.product-image2 {
+  width: 100%;
+  height: auto;
+  margin-bottom: 12px;
+  object-fit: cover;
+}
+
+/* Product name */
+.product-name2 {
+  font-size: 18px;
+  margin: 8px 0;
+  color: #333;
+}
+
+.product-category-link2 {
+  font-size: 14px;
+  color: #550a345c;
+  text-decoration: none;
+}
+
+.product-category-link2:hover {
+  text-decoration: underline;
+}
+
+/* Product price styling */
+.product-price2 {
+  font-size: 18px;
+  color: #550a35;
+  font-weight: bold;
+}
+
+.product-price2 span {
+  font-size: 14px;
+  color: gray;
+}
+
+/* Buttons container */
+.buttons2 {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.buy-now2 {
+  background-color: #550a35;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.buy-now2:hover {
+  background-color: #e63946;
+}
+
+.cart2 {
+  background-color: white;
+  color: #550a35;
+  border: 1px solid #550a35;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.cart2:hover {
+  background-color: #550a35;
+  color: white;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 992px) {
+  .product-gridd2 {
+    grid-template-columns: 1fr; /* Stack category and products on small screens */
   }
 
-  .product-title {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-    margin: 10px 0;
+  .category-links2 {
+    max-height: none;
   }
-  
-  .product-price {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    margin-top: 10px;
-  }
-  
+}
