@@ -1,7 +1,5 @@
+import React, { useEffect, useState } from "react";
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Button,
   Card,
   Container,
@@ -14,27 +12,22 @@ import {
   useMediaQuery,
   Box,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CodIcon from "../assets/cod.png";
-import GpayIcon from "../assets/gpay.webp";
-import PhonePayIcon from "../assets/phonepay.png";
 import Online from "../assets/online.jpg";
 import axios from "axios";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Payment = () => {
   const location = useLocation();
+  const navigate = useNavigate(); // Used for navigation
   const selectedAddress = location.state?.selectedAddress || {};
-  const quantity = location.state?.quantity || {};
-  const product = location.state?.product || {};
-  const price = location.state?.price || {};
+  const quantity = location.state?.quantity || 1;
+  const product = location.state?.product ;
+  const price = location.state?.price || 0;
   const User = location.state?.User || {};
   const isMobile = useMediaQuery("(max-width:600px)");
   const [deliveryType, setDeliveryType] = useState("Cash on Delivery");
-  const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
-  const [expanded, setExpanded] = useState(false);
-  const [orderMessage, setOrderMessage] = useState("");
+  const [paymentInput, setPaymentInput] = useState(price);
   const [userId, setUserId] = useState(1);
   const [addressId, setAddressId] = useState(selectedAddress.id || "");
   const [orderPlaced, setOrderPlaced] = useState("");
@@ -43,46 +36,77 @@ const Payment = () => {
     if (selectedAddress && selectedAddress.id) {
       setAddressId(selectedAddress.id);
     }
-    setOrderPlaced(product.payment_status);
-  }, [selectedAddress]);
-
-  const handlePayment = (event) => {
-    setPaymentMethod(event.target.value);
-  };
+    setOrderPlaced(product.payment_status || "Pending");
+  }, [selectedAddress, product]);
 
   const handleDeliveryChange = (event) => {
     setDeliveryType(event.target.value);
-    setPaymentMethod("");
-  };
-
-  const handleExpansion = () => {
-    setExpanded((prevExpanded) => !prevExpanded);
-  };
-
-  const getButtonText = () => {
-    if (
-      deliveryType === "Online Delivery" &&
-      (paymentMethod === "Gpay" || paymentMethod === "Phone pay")
-    ) {
-      return "Pay Now";
+    if (event.target.value === "Online Payment") {
+      setPaymentInput(price); // Default amount for online payment
     }
-    return "Place Order";
   };
 
-  const placeOrder = async () => {
+  const handleInputChange = (event) => {
+    setPaymentInput(event.target.value);
+    console.log("Payment Input:", event.target.value);
+  };
+
+  const handlePayment = (e) => {
+    e.preventDefault();
+
+    if (!paymentInput) {
+      alert("Please enter a payment amount");
+      return;
+    }
+
+    var options = {
+      key: "rzp_test_Zy8N3XBUFsyrib", // Replace with your Razorpay test key
+      key_secret: "TTSMYDCU7bl0E7sl60BG5fvV", // Replace with your Razorpay test secret
+      amount: paymentInput * 100, // Convert to smallest currency unit (paise for INR)
+      currency: "INR",
+      name: "STORE PROJECT",
+      description: "For testing purpose",
+      handler: async function (response) {
+        alert(Payment `Successful! ID: ${response.razorpay_payment_id}`);
+        await placeOrder("Completed"); // Placing the order after successful payment
+        navigate("/orderConfirm"); // Redirecting to order confirmation page
+      },
+      prefill: {
+        name: "murugavalli",
+        email: "valli1211254@gmail.com",
+        contact: "6369254022",
+      },
+      notes: {
+        address: "Razorpay Corporate Office",
+      },
+      theme: {
+        color: "#550a35", // Your custom theme color
+      },
+      payment_capture: 1, // Ensures automatic capture of payments
+    };
+
+    const razorpayInstance = new window.Razorpay(options);
+    razorpayInstance.on("payment.failed", function (response) {
+      alert(Payment `Failed! Reason: ${response.error.description}`);
+    });
+    razorpayInstance.open();
+  };
+
+  const placeOrder = async (paymentStatus = "Pending") => {
     const datas = {
       id: userId,
       user: User,
       product: product,
       quantity: parseInt(quantity),
       total_price: parseInt(price),
-      payment_method: paymentMethod,
+      payment_method: deliveryType === "Cash on Delivery" ? "Cash" : "Online Payment",
+      payment_amount: deliveryType === "Online Payment" ? paymentInput : null,
       user_address: addressId,
       status: orderPlaced,
-      payment_status:
-        deliveryType === "Cash on Delivery" ? "Pending" : "Completed",
+      payment_status: paymentStatus,
       delivery_status: "Processing",
     };
+    console.log("product", product)
 
     try {
       const response = await axios.post(
@@ -96,10 +120,8 @@ const Payment = () => {
       );
 
       if (response.status === 201) {
-        setOrderMessage("Your order has been placed successfully!");
-        setTimeout(() => {
-          setOrderMessage("");
-        }, 3000);
+        console.log("Order placed successfully");
+        navigate("/orderConfirm");
       }
     } catch (error) {
       console.error(error.response ? error.response.data : error.message);
@@ -119,7 +141,6 @@ const Payment = () => {
           <Grid item style={{ paddingLeft: isMobile ? "30px" : "" }}>
             <FormControl>
               <RadioGroup
-                aria-labelledby="demo-radio-buttons-group-label"
                 defaultValue="Cash on Delivery"
                 name="radio-buttons-group"
                 onChange={handleDeliveryChange}
@@ -166,7 +187,7 @@ const Payment = () => {
                     }}
                   >
                     <FormControlLabel
-                      value="Online Delivery"
+                      value="Online Payment"
                       control={<Radio />}
                       label={
                         <Box
@@ -174,10 +195,10 @@ const Payment = () => {
                           justifyContent="space-between"
                           width="100%"
                         >
-                          <span>Online Delivery</span>
+                          <span>Online Payment</span>
                           <img
                             src={Online}
-                            alt="Online Delivery"
+                            alt="Online Payment"
                             style={{
                               width: "24px",
                               paddingLeft: "15px",
@@ -186,139 +207,31 @@ const Payment = () => {
                         </Box>
                       }
                     />
-                    {deliveryType === "Online Delivery" && (
-                      <>
-                        <Accordion
-                          expanded={expanded}
-                          onChange={handleExpansion}
-                          TransitionProps={{ timeout: 400 }}
+                    {deliveryType === "Online Payment" && (
+                      <Box mt={2}>
+                        <Typography variant="body1">Enter Payment Details:</Typography>
+                        <input
+                          type="text"
+                          value={paymentInput}
+                          onChange={handleInputChange}
+                          placeholder="Enter Payment Info"
+                          style={{
+                            width: "100%",
+                            padding: "10px",
+                            marginTop: "10px",
+                            borderRadius: "5px",
+                            border: "1px solid #ccc",
+                          }}
+                        />
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={handlePayment}
+                          style={{ marginTop: "10px" }}
                         >
-                          <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel1-content"
-                            id="panel1-header"
-                          >
-                            <Typography>UPI</Typography>
-                          </AccordionSummary>
-                          <AccordionDetails>
-                            <Grid>
-                              <FormControl>
-                                <RadioGroup
-                                  aria-labelledby="demo-radio-buttons-group-label"
-                                  onChange={handlePayment}
-                                  name="radio-buttons-group"
-                                >
-                                  <FormControlLabel
-                                    value="Phone pay"
-                                    control={<Radio />}
-                                    label={
-                                      <Box
-                                        display="flex"
-                                        justifyContent="space-between"
-                                        width="100%"
-                                      >
-                                        <span>Phone pay</span>
-                                        <img
-                                          src={PhonePayIcon}
-                                          alt="Phone pay"
-                                          style={{
-                                            width: "34px",
-                                            paddingLeft: "10px",
-                                          }}
-                                        />
-                                      </Box>
-                                    }
-                                  />
-                                  <FormControlLabel
-                                    value="Gpay"
-                                    control={<Radio />}
-                                    label={
-                                      <Box
-                                        display="flex"
-                                        justifyContent="space-between"
-                                        width="100%"
-                                      >
-                                        <span>Gpay</span>
-                                        <img
-                                          src={GpayIcon}
-                                          alt="Gpay"
-                                          style={{
-                                            width: "34px",
-                                            paddingLeft: "10px",
-                                          }}
-                                        />
-                                      </Box>
-                                    }
-                                  />
-                                </RadioGroup>
-                              </FormControl>
-                            </Grid>
-                          </AccordionDetails>
-                        </Accordion>
-                        <Accordion>
-                          <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel2-content"
-                            id="panel2-header"
-                          >
-                            <Typography>Wallet</Typography>
-                          </AccordionSummary>
-                          <AccordionDetails>
-                            <Grid>
-                              <FormControl>
-                                <RadioGroup
-                                  aria-labelledby="demo-radio-buttons-group-label"
-                                  onChange={handlePayment}
-                                  name="radio-buttons-group"
-                                >
-                                  <FormControlLabel
-                                    value="Phone pay"
-                                    control={<Radio />}
-                                    label={
-                                      <Box
-                                        display="flex"
-                                        justifyContent="space-between"
-                                        width="100%"
-                                      >
-                                        <span>Phone pay</span>
-                                        <img
-                                          src={PhonePayIcon}
-                                          alt="Phone pay"
-                                          style={{
-                                            width: "34px",
-                                            paddingLeft: "10px",
-                                          }}
-                                        />
-                                      </Box>
-                                    }
-                                  />
-                                  <FormControlLabel
-                                    value="Gpay"
-                                    control={<Radio />}
-                                    label={
-                                      <Box
-                                        display="flex"
-                                        justifyContent="space-between"
-                                        width="100%"
-                                      >
-                                        <span>Gpay</span>
-                                        <img
-                                          src={GpayIcon}
-                                          alt="Gpay"
-                                          style={{
-                                            width: "34px",
-                                            paddingLeft: "10px",
-                                          }}
-                                        />
-                                      </Box>
-                                    }
-                                  />
-                                </RadioGroup>
-                              </FormControl>
-                            </Grid>
-                          </AccordionDetails>
-                        </Accordion>
-                      </>
+                          Pay with Razorpay
+                        </Button>
+                      </Box>
                     )}
                   </Card>
                 </Grid>
@@ -326,15 +239,16 @@ const Payment = () => {
             </FormControl>
           </Grid>
         </Grid>
-        <Grid item container justifyContent={"center"}>
-          <Button
-            style={{ textTransform: "capitalize", marginTop: "5vh" }}
-            variant="contained"
-            onClick={placeOrder}
-          >
-            <Link to="/orderConfirm">{getButtonText()}</Link>
-          </Button>
-        </Grid>
+        {deliveryType === "Cash on Delivery" && (
+          <Grid item container justifyContent={"center"}>
+            <Button
+              style={{ textTransform: "capitalize", marginTop: "5vh" }}
+              variant="contained"
+              onClick={() => placeOrder()}
+            >
+            </Button>
+          </Grid>
+        )}
       </Container>
     </div>
   );

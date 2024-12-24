@@ -132,7 +132,7 @@ console.log(datas);
             state: {
               user: User,
               submittedAddresses: updatedAddresses,
-              product,
+              product : product.id,
               quantity,
               price,
             },

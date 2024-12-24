@@ -367,6 +367,7 @@ const PaymentPage = () => {
       navigate("/payment", {
         state: { selectedAddress, User, product, quantity, price },
       });
+      console.log(product);
     } else {
       alert("Please add an address before proceeding to payment.");
     }

@@ -56,7 +56,7 @@
 }
 
 /* Styling for the product image */
-.product-image {
+.products-image {
   max-width: 100%;
   height: auto;
   margin-bottom: 8px;
@@ -214,4 +214,297 @@
   }
   
   
+/* wording slide */
 
+.eco-quotes-section {
+  padding: 40px 20px;
+  background-color: #eaf4e6;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 2rem;
+  color: #2f855a;
+  margin-bottom: 20px;
+}
+
+.quotes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.quote-card {
+  background-color: #ffffff;
+  border: 2px solid #68d391;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.quote-text {
+  font-size: 1.2rem;
+  color: #22543d;
+  font-style: italic;
+}
+
+
+
+
+/* Slider Container */
+.ecoSlider {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  height: 120px; /* Reduced height for container */
+}
+
+/* Slider Track */
+.ecoSliderTrack {
+  display: flex;
+  animation: ecoContinuousScroll 45s linear infinite;
+}
+
+/* Continuous Scroll Animation */
+@keyframes ecoContinuousScroll {
+  0% {
+      transform: translateX(0);
+  }
+  100% {
+      transform: translateX(-360%); /* Adjusted for reduced width */
+  }
+}
+
+.ecoImageSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+.ecoSlide {
+  flex: 0 0 auto; /* Prevent resizing */
+  width: 50%; /* Width of each slide reduced */
+  height: 100px; /* Reduced height for slides */
+  text-align: center;
+  font-size: 1.2em; /* Slightly smaller font size */
+  line-height: 100px; /* Adjusted line height */
+  background-color: #81c784;
+  color: white;
+  border-radius: 20px; /* Slightly rounded corners */
+  margin: 0 10px; /* Slightly larger spacing between slides */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Added shadow for better appearance */
+}
+
+.ecoSlide1 {
+  background-color: #c8e6c9;
+}
+
+.ecoSlide2 {
+  background-color: #a5d6a7;
+}
+
+.ecoSlide3 {
+  background-color: #81c784;
+}
+
+
+
+/* Grid container */
+.eco-grid1 {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* Large box takes 2 parts, small boxes take 1 part */
+  grid-template-rows: repeat(2, auto); /* Automatically adjust row heights */
+  gap: 5px; /* Spacing between grid items */
+  width: 80%; /* Adjust container width for responsiveness */
+  padding: 20px;
+  margin-bottom: 70px;
+}
+
+/* Grid items */
+.eco-grid-item1 {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  padding: 20px;
+  background-size: cover;
+  background-position: center;
+  aspect-ratio: 16 / 9; /* Maintain consistent aspect ratio */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.eco-grid-item1.large {
+  grid-row: span 2;
+  height: 80%; 
+  background-image: url('../assets/liquidoffertemplate.jpg'); 
+}
+
+.eco-grid-item2 {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  padding: 20px;
+  background-size: cover;
+  background-position: center;
+  aspect-ratio: 16 / 9; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.eco-grid-item2 {
+  grid-row: span 2;
+  height: 80%; 
+  background-image: url('../assets/glasscleanerslide.jpg'); 
+}
+
+
+
+.fmcg-top-section {
+  width:113.5%;
+  margin:-3rem 0 0 -10rem ;
+  padding: 0;
+  height: 50rem; /* Full viewport height for maximum visibility */
+  overflow: hidden;
+  background: url('../assets/eco.png') no-repeat center center; /* Center the image */
+  background-size:100% 100%; /* Ensures the image covers the entire section */
+  display: flex;
+  flex-direction: column; 
+  justify-content: center; /* Space between the heading and waves */
+  align-items: center; /* Center content horizontally */
+  padding: 20px; 
+  box-sizing: border-box;
+}
+
+.fmcg-heading {
+  z-index: 10;
+  color: #82C035;
+  font-size: 4rem; 
+  font-weight: bold;
+  text-align: center;
+  margin-top: -500px;
+  animation: fmcg-fade-in 2s ease-in-out;
+  text-shadow: 2px 2px 8px rgba(0, 172, 177, 0.7);
+
+}
+
+.fmcg-wave-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: end;
+  align-items: flex-end;
+}
+
+.fmcg-wave {
+  position: absolute;
+  bottom: 0;
+  width: 300%;
+  height: 50vh; /* Adjusted for proportional view */
+  background: rgba(247, 125, 1, 0.4); 
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: fmcg-wave-animation 20s infinite linear;
+}
+
+.fmcg-wave1 {
+  background: rgba(247, 125, 1, 0.4);
+  animation-delay: 0s;
+  width: 50%;
+}
+
+.fmcg-wave2 {
+  background: linear-gradient(135deg, rgba(0, 171, 175, 0.4), rgba(125, 186, 59, 0.4), rgba(247, 125, 1, 0.4));
+  height: 105vh; /* Slightly taller wave for layering effect */
+  animation-delay: -3s;
+  box-shadow: 10px 10px rgba(0,0,0,0.2);
+  width: 50%;
+}
+
+.fmcg-wave3 {
+  background: rgba(255, 255, 255, 0.2);
+  height: 50vh; /* Highest wave for a cascading effect */
+  animation-delay: -6s;
+  width: 50%;
+}
+
+/* Keyframe animations */
+@keyframes fmcg-wave-animation {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes fmcg-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) { /* For tablets and mobile */
+  .fmcg-top-section {
+    height: 40rem; /* Adjust height for smaller screens */
+    padding: 10px; /* Reduce padding for mobile devices */
+  }
+
+  .fmcg-heading {
+    font-size: 2.5rem; /* Adjust font size for smaller screens */
+    margin-top: -410px;
+  }
+
+  .fmcg-wave {
+    height: 15vh; /* Smaller waves on mobile */
+  }
+
+  .fmcg-wave2 {
+    height: 20vh;
+  }
+
+  .fmcg-wave3 {
+    height: 25vh;
+  }
+}
+
+@media (min-width: 1024px) { /* For larger laptop/desktop screens */
+  .fmcg-top-section {
+    height: 50rem; /* Keep original height */
+    padding: 40px; /* Add more padding for spacing */
+  }
+
+  .fmcg-heading {
+    font-size: 5rem; /* Larger font for desktop */
+  }
+
+  .fmcg-wave {
+    height: 20vh; /* Keep proportional waves */
+  }
+
+  .fmcg-wave2 {
+    height: 25vh;
+  }
+
+  .fmcg-wave3 {
+    height: 30vh;
+  }
+}

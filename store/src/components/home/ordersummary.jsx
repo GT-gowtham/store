@@ -102,7 +102,7 @@ function OrderSummary() {
   
     axios
   .put(
-    `http://localhost:8000/api/order/Order/${orderToCancel}/`,
+   `http://localhost:8000/api/order/Order/${orderToCancel}/`,
     {
       delivery_status: "Canceled",
       status: selectedReason,
@@ -116,6 +116,9 @@ function OrderSummary() {
   .then((response) => {
     // Handle success
     console.log("Order updated:", response.data);
+ // Navigate to the OrderSummary page
+    navigate("/ordersummary");
+
   })
   .catch((error) => {
     console.error("Error updating order:", error.response.data);
@@ -123,7 +126,7 @@ function OrderSummary() {
   };
   
   const handleContinueShopping = () => {
-    navigate("/");
+    navigate("/home");
   };
   // Filtering active, canceled, and previous orders based on delivery_status
   const activeOrders = orders.filter(
@@ -300,4 +303,4 @@ function OrderSummary() {
   );
 }
 
-export default OrderSummary;
+export default OrderSummary;

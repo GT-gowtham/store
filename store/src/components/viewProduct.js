@@ -694,7 +694,7 @@ const ViewProduct = ({ onUpdateCartItemCount }) => {
       console.error("Error adding to cart:", error);
     }
   };
-  const getUser = async () => {
+  const getUser = async (userId) => {
     try {
       const response = await axios.get(
         "http://localhost:8000/api/User_details/"
@@ -716,7 +716,7 @@ const ViewProduct = ({ onUpdateCartItemCount }) => {
       navigate("/addAddress", {
         state: {
           user: userId,
-          product: product.id,
+          product: products.id,
           quantity,
           price: products.product_price * quantity,
         },
@@ -725,9 +725,9 @@ const ViewProduct = ({ onUpdateCartItemCount }) => {
       navigate("/address", {
         state: {
           user: userId,
-          product: product.id,
+          product: products.id,
           quantity,
-          price: product.product_price * quantity,
+          price: products.product_price * quantity,
         },
       });
     }
